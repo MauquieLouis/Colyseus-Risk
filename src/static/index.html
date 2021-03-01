@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+	    <meta charset="UTF-8">
+	    <title>ChatRoom</title>
+	    <!--<link href="https://unpkg.com/nes.css@2.3.0/css/nes.min.css" rel="stylesheet"/>
+	    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">-->
+	    <!-- <link rel="stylesheet" type="text/css" href="index.css"> -->
+	</head>
+	<body>
+		<div id="UserConnected">
+			<h4>user connected : </h4>
+		</div>
+		<div class="nes-container is-dark with-title">
+		    <p class="title">ChatRoom</p>
+		    <p>This is a test for a chatRoom</p>
+		    <a><h4 onclick="changeColorFunction()">Change color</h4></a>
+		<form id="formUsername">
+			<input type="text" id="inputUsername" value="" autofocus placeholder="username"/>
+			<input type="submit" value="send" />
+		</form> 
+		<form id="form">
+			<input type="text" id="input" value=""/>
+			<input type="submit" value="send" />
+		</form>
+		</div>
+		<div id="chatBox">
+
+		</div>
+	</body>
+	<script type="text/javascript" src="https://unpkg.com/colyseus.js@^0.14.0/dist/colyseus.js"></script>
+	<script type="text/javascript" src="chat.js"></script>
+	<!--<script type="text/javascript" src="C:/Users/Louis/nodeTest/my-colyseus-app/src/static/chat.js"></script>-->
+	
+</html>
