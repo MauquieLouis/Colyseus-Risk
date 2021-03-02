@@ -44,9 +44,12 @@ gameServer.define("chat", MyRoom)
 //	res.sendFile('C:/Users/Louis/nodeTest/my-colyseus-app/src/static/index.html');
 //})
 app.use('/', serveIndex(path.join(__dirname, "static"), {'icons': true}))
+//app.use('/', serveIndex(path.join(__dirname, "static/bootstrap/css"), {'icons': true}))
+//app.use('/', serveIndex(path.join(__dirname, "static/bootstrap/js"), {'icons': true}))
 app.use('/', express.static(path.join(__dirname, "static")));
+//app.use('/', express.static(path.join(__dirname, "staticstatic/bootstrap/css")));
 
-
+//app.use('/', express.static(path.join(__dirname, "staticstatic/bootstrap/js")));
 
 // register colyseus monitor AFTER registering your room handlers
 app.use("/colyseus", monitor());

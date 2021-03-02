@@ -1,0 +1,9 @@
+.droite{
+	border:2px solid black;
+	display:inline-block;
+}
+
+.gauche{
+	border:2px solid black;
+	display:inline-block;
+}

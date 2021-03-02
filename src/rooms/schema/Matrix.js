@@ -5,8 +5,8 @@ const Schema = schema.Schema;
 class Matrix extends Schema{
 	constructor(){
 		super();
-		this.line = 12;
-		this.column = 12;
+		this.line = 8;
+		this.column = 8;
 		this.matrix = new Array(this.line).fill('#FFFFFF').map(() => new Array(this.line).fill('#FFFFFF'));
 	}
 }

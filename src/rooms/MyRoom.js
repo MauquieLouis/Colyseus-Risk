@@ -5,25 +5,18 @@ const MyRoomState = require('./schema/MyRoomState').MyRoomState;
 //Include Player class
 const Player = require('./schema/Player').Player
 //Include Matrix class
-const Matrix = require('./schema/Matrix').Matrix;
+//const Matrix = require('./schema/Matrix').Matrix;
 
 exports.MyRoom = class MyRoom extends colyseus.Room {
 
 	//maxClients = 8;
   	onCreate (options) {
 		// - - - - - - - - - - - - - - - - - - - - - - - - -//
-		// - - - - - - - - -All Room State - - - - - - - - -//
+		// - - - - - - - - - - -Room State - - - - - - - - -//
 
 		this.setState(new MyRoomState());
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - -//
-		
-		
-		// - - - - - - - - - - - - - - - - - - - - - - - - -//
-		// - - - - - - - - -Matrix Init- - - - - - - - - - -//
-		
-//		const matrix = this.state.matrix
-//		this.broadcast("matrixInit", ('line:'+matrix.line+',column'+matrix.column))
 		
 		// - - - - - - - - - - - - - - - - - - - - - - - - -//
 		//Message Console quand quelqu'un rejoins le serveur
@@ -34,14 +27,14 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 			player.nom = message;
 			player.color = changeColorFunction()
 			console.log(player.nom, 'est le nouveau pseudo de ', client.sessionId)
+			this.broadcast("listUserConnected", this.state.players)
 		});
 		 		
     	this.onMessage("message", (client, message) => {
 			const player = this.state.players.get(client.sessionId);
-//			console.log(player.nom)
-//			console.log(player.color)
       		console.log("ChatRoom received message from", client.sessionId, ":", message);
-            this.broadcast("messages", `(${player.nom}) ${message}`);
+			// 3 paramètre pour message : 1er : le message; 2eme : le pseudo, 3eme : la couleur
+			this.broadcast("messages", [message, player.nom, player.color])
 		});
 		
 		//change matrice on click
@@ -49,26 +42,32 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 			const player = this.state.players.get(client.sessionId);
 			const matrix = this.state.matrix
 			matrix.matrix[message[0]][message[1]] = player.color
-//			console.log(matrix.matrix)
 			this.broadcast("matrixChange", matrix.matrix)
 			console.log(message)
 			console.log(this.state.players.get(client.sessionId).connected)
 		})
+		
 	}
 
 	onJoin (client, options) {
 		this.state.players.set(client.sessionId, new Player());
 		const matrix = this.state.matrix
-		this.broadcast("matrixInit", [matrix.matrix])
+		// Affichage de la matrice
+		this.broadcast("matrixInit",matrix.matrix)
 		this.broadcast("matrixChange", matrix.matrix)
-		this.broadcast("messages", `${ client.sessionId } joined.`);
-		this.state.players.set(client.sessionId, new Player());
+		console.log(this.state.players)
 		this.state.players.get(client.sessionId).color = changeColorFunction()
-//		console.log(this.state.players)
+		// Affichage liste users présent
+		this.broadcast("listUserConnected", this.state.players);
+		const player = this.state.players.get(client.sessionId);
+		// 3 paramètre pour message : 1er : le message; 2eme : le pseudo, 3eme : la couleur
+		this.broadcast("messages", [('('+client.sessionId+') : joined the fucking session !'),player.nom,player.color]);
 	}
 
 	onLeave (client, consented) {
-		this.broadcast("messages", `${ client.sessionId } left.`);
+		this.state.players.delete(client.sessionId)
+		// 3 paramètre pour message : 1er : le message; 2eme : le pseudo, 3eme : la couleur
+		this.broadcast("messages", [('('+client.sessionId+') : left the fucking session !'),player.nom,player.color]);
 		console.log("Hey a bitch leave the room");
 	}
 

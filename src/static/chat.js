@@ -13,18 +13,20 @@ var host = window.document.location.host.replace(/:.*/, '');
         });
         // listen to patches coming from the server
         room.onMessage("messages", function(message) {
-            var p = document.createElement("p");
-            p.innerText = message;
-            document.querySelector("#chatBox").appendChild(p);
+			chatBox = document.getElementById('chatBox')
+			console.log(message)
+			chatBox.innerHTML += ('<span style="color:'+message[2]+';">'+message[1]+' : '+message[0]+'</span></br>')
+//            var p = document.createElement("p");
+//            p.innerText = message;
+//            document.querySelector("#chatBox").appendChild(p);
         });
 		
 		// Initialisation de la matrice : afficahge côté client
 		room.onMessage("matrixInit", function(message) {
-			console.log('message 0 : '+message[1])
 			matrixZone = document.getElementById('matrix')
 			matrixZone.innerHTML = '';
-			for(var i=0; i<message[0].length; i++){
-				for(var j=0; j<message[0].length; j++){
+			for(var i=0; i<message.length; i++){
+				for(var j=0; j<message.length; j++){
 					var div = document.createElement('div')
 					div.id = i+'.'+j
 					div.style = "display:inline-block; height:40px; width:40px; border:1px solid black;"
@@ -35,8 +37,8 @@ var host = window.document.location.host.replace(/:.*/, '');
 				matrixZone.innerHTML+=("</br>")
 			}
 			setTimeout(function(){
-				for(var i=0; i<message[0].length; i++){
-					for(var j=0; j<message[0].length; j++){
+				for(var i=0; i<message.length; i++){
+					for(var j=0; j<message.length; j++){
 						document.getElementById(i+'.'+j).addEventListener("click",function(){
 						coord = this.id.split(".")
 						room.send("caseClicked", coord)
@@ -55,6 +57,22 @@ var host = window.document.location.host.replace(/:.*/, '');
 					}
 				}
 			}
+		})
+		
+		room.onMessage("listUserConnected", function(message){
+			listUser = document.getElementById('userList')
+			listUser.innerHTML = ''
+			console.log(message["FWP4Y0wof"])
+			for(const[key, value] of Object.entries(message))
+			{
+				console.log(key+" : "+value.nom+" : "+value.color)
+				listUser.innerHTML += ('<span id="'+key+'" style="color:'+value.color+'">'+key+' ('+value.nom+')'+'</span></br>')
+			}
+//			message.forEach(function(){console.log(value, key)})
+			
+//			for(var i=0; i< message.length; i++){
+//				console.log(message[i])
+//			}
 		})
 		
         // send message to room on submit
