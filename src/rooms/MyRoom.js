@@ -1,48 +1,73 @@
 const colyseus = require('colyseus');
-const MyRoomState = require('./schema/MyRoomState').MyRoomState;
-const Player = require('./schema/Player').Player
 
-exports.MyRoom = class extends colyseus.Room {
+//Include room state
+const MyRoomState = require('./schema/MyRoomState').MyRoomState;
+//Include Player class
+const Player = require('./schema/Player').Player
+//Include Matrix class
+const Matrix = require('./schema/Matrix').Matrix;
+
+exports.MyRoom = class MyRoom extends colyseus.Room {
 
 	//maxClients = 8;
   	onCreate (options) {
 		// - - - - - - - - - - - - - - - - - - - - - - - - -//
-		// - - - - - - - - - My Room State - - - - - - - - -//
+		// - - - - - - - - -All Room State - - - - - - - - -//
+
+		this.setState(new MyRoomState());
+
 		// - - - - - - - - - - - - - - - - - - - - - - - - -//
-    	//this.setState(new MyRoomState());
-		this.setState(new Player());
+		
+		
+		// - - - - - - - - - - - - - - - - - - - - - - - - -//
+		// - - - - - - - - -Matrix Init- - - - - - - - - - -//
+		
+//		const matrix = this.state.matrix
+//		this.broadcast("matrixInit", ('line:'+matrix.line+',column'+matrix.column))
+		
+		// - - - - - - - - - - - - - - - - - - - - - - - - -//
+
 		//Message Console quand quelqu'un rejoins le serveur
 		console.log("SomeOne VerY SpeCiaL join the room")
-		//Essai de changement de couleur d'écriture pour chaque personne
-		options.username = changeColorFunction()
-		console.log(options.username)
-		const map = new MapSchema<Player>();
-    	this.onMessage("message", (client, message) => {
-      		console.log("ChatRoom received message from", client.sessionId, ":", message);
-            this.broadcast("messages", `(${client.sessionId}) ${message}`);
-			
+		this.onMessage("author", (client, message) => {
+			console.log("New author name defined :", message)
+			const player = this.state.players.get(client.sessionId);
+			player.nom = message;
+			player.color = changeColorFunction()
+			console.log(player.nom, 'est le nouveau pseudo de ', client.sessionId)
 		});
-//		this.onMessage("author", (client, message) => {
-//			console.log("New author name defined :", message)
-//			player.pseudo = message;
-//			console.log(options.pseudo, 'est le nouveau pseudo de ', client.sessionId)
-//		});
+		 		
+    	this.onMessage("message", (client, message) => {
+			const player = this.state.players.get(client.sessionId);
+//			console.log(player.nom)
+//			console.log(player.color)
+      		console.log("ChatRoom received message from", client.sessionId, ":", message);
+            this.broadcast("messages", `(${player.nom}) ${message}`);
+		});
 		
-		this.onMessage("userConnection")
+		//change matrice on click
+		this.onMessage("caseClicked",(client, message)=>{
+			const player = this.state.players.get(client.sessionId);
+			const matrix = this.state.matrix
+			matrix.matrix[message[0]][message[1]] = player.color
+//			console.log(matrix.matrix)
+			this.broadcast("matrixChange", matrix.matrix)
+			console.log(message)
+			console.log(this.state.players.get(client.sessionId).connected)
+		})
 	}
 
 	onJoin (client, options) {
-		player = this.setState(new Player());
-//		player.pseudo = options.pseudo
+		this.state.players.set(client.sessionId, new Player());
+		const matrix = this.state.matrix
+		console.log(this.state.players.get(client.sessionId).connected)
+		this.broadcast("matrixInit", [matrix.matrix,this.state.players.get(client.sessionId).connected])
+		this.broadcast("matrixChange", matrix.matrix)
 		this.broadcast("messages", `${ client.sessionId } joined.`);
-		this.broadcast("newUserJoin",`${client.sessionId}`)
-		
-		this.onMessage("author", (client, message) => {
-			console.log("New author name defined :", message)
-			player.pseudo = message;
-			console.log(options.pseudo, 'est le nouveau pseudo de ', client.sessionId)
-			console.logo(player.pseudo)
-		});
+		this.state.players.set(client.sessionId, new Player());
+		this.state.players.get(client.sessionId).color = changeColorFunction()
+		this.state.players.get(client.sessionId).connected = 1;
+//		console.log(this.state.players)
 	}
 
 	onLeave (client, consented) {

@@ -1,28 +1,32 @@
 const schema = require('@colyseus/schema');
 const Schema = schema.Schema;
-const MapSchema = schema.MapSchema;
 
-class Player extends schema.Schema {}
-	
-	schema.defineTypes(Player, {
-  	pseudo: "string",
-	color: "string",
-	});
 
-class MyState extends Schema {
+class Player extends Schema{
 	constructor(){
 		super();
-		
-		//this.player = new Player();
-		this.players = new MapSchema();
+		this.nom = "JeanMi";
+		this.color = "red";
+		this.connected = 0;
 	}
 }
+schema.defineTypes(Player, {
+	nom: "string",
+	color: "string",
+	connected:"number",
+});
 
-schema.defineTypes(MyState, {
-	players : { map: Player }
-})
-//schema.defineTypes(MyState,{
-//	player: Player
-//});
+exports.Player = Player
 
-//exports.Player = Player;
+/*class PlayerState extends Schema{
+	constructor(){
+		super();
+		this.players = new schema.MapSchema();
+	}
+	
+}
+schema.defineTypes(PlayerState,{
+	players: {map: exports.Player }
+})*/
+
+//exports.PlayerState = PlayerState

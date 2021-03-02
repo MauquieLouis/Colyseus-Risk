@@ -37,14 +37,14 @@ gameServer.define("chat", MyRoom)
 //app.use("/", socialRoutes);
 
 
-app.use(express.static(__dirname + '/static'))
-app.use('/',function(req,res){
-	sess = req.session;
-	sess.name = "JMLaZOne"
-	res.sendFile('C:/Users/Louis/nodeTest/my-colyseus-app/src/static/index.html');
-})
-//app.use('/', serveIndex(path.join(__dirname, "static"), {'icons': true}))
-//app.use('/', express.static(path.join(__dirname, "static")));
+//app.use(express.static(__dirname + '/static'))
+//app.use('/',function(req,res){
+//	sess = req.session;
+//	sess.name = "JMLaZOne"
+//	res.sendFile('C:/Users/Louis/nodeTest/my-colyseus-app/src/static/index.html');
+//})
+app.use('/', serveIndex(path.join(__dirname, "static"), {'icons': true}))
+app.use('/', express.static(path.join(__dirname, "static")));
 
 
 
