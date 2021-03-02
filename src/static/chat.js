@@ -3,15 +3,14 @@ var host = window.document.location.host.replace(/:.*/, '');
       var client = new Colyseus.Client(location.protocol.replace("http", "ws") + "//" + host + (location.port ? ':'+location.port : ''));
       client.joinOrCreate("chat").then(room => {
         console.log("joined the room");
+		console.log(client)
         room.onStateChange.once(function(state) {
             console.log("initial room state:", state);
         });
-
         // new room state
         room.onStateChange(function(state) {
             // this signal is triggered on each patch
         });
-
         // listen to patches coming from the server
         room.onMessage("messages", function(message) {
             var p = document.createElement("p");
@@ -23,10 +22,7 @@ var host = window.document.location.host.replace(/:.*/, '');
 		room.onMessage("matrixInit", function(message) {
 			console.log('message 0 : '+message[1])
 			matrixZone = document.getElementById('matrix')
-//			console.log(message[0].length)
-			console.log(client)
-			if(message[1] == 0)
-			{
+			matrixZone.innerHTML = '';
 			for(var i=0; i<message[0].length; i++){
 				for(var j=0; j<message[0].length; j++){
 					var div = document.createElement('div')
@@ -48,7 +44,6 @@ var host = window.document.location.host.replace(/:.*/, '');
 					}
 				}
 			},20)
-			}
         });
 		room.onMessage("matrixChange", function(message){
 //			console.log('matrixChange')

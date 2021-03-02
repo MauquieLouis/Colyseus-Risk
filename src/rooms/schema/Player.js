@@ -7,13 +7,11 @@ class Player extends Schema{
 		super();
 		this.nom = "JeanMi";
 		this.color = "red";
-		this.connected = 0;
 	}
 }
 schema.defineTypes(Player, {
 	nom: "string",
 	color: "string",
-	connected:"number",
 });
 
 exports.Player = Player

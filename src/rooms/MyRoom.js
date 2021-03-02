@@ -26,7 +26,6 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 //		this.broadcast("matrixInit", ('line:'+matrix.line+',column'+matrix.column))
 		
 		// - - - - - - - - - - - - - - - - - - - - - - - - -//
-
 		//Message Console quand quelqu'un rejoins le serveur
 		console.log("SomeOne VerY SpeCiaL join the room")
 		this.onMessage("author", (client, message) => {
@@ -60,13 +59,11 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 	onJoin (client, options) {
 		this.state.players.set(client.sessionId, new Player());
 		const matrix = this.state.matrix
-		console.log(this.state.players.get(client.sessionId).connected)
-		this.broadcast("matrixInit", [matrix.matrix,this.state.players.get(client.sessionId).connected])
+		this.broadcast("matrixInit", [matrix.matrix])
 		this.broadcast("matrixChange", matrix.matrix)
 		this.broadcast("messages", `${ client.sessionId } joined.`);
 		this.state.players.set(client.sessionId, new Player());
 		this.state.players.get(client.sessionId).color = changeColorFunction()
-		this.state.players.get(client.sessionId).connected = 1;
 //		console.log(this.state.players)
 	}
 

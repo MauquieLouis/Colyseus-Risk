@@ -8,14 +8,12 @@ class MyRoomState extends schema.Schema {
 		super();
 		this.players = new schema.MapSchema();
 		this.matrix = new Matrix();
-//		this.connected = new schema.MapSchema();
 	}
 }
 		
 schema.defineTypes(MyRoomState,{
 	players: {map: Player },
 	matrix: Matrix,
-//	connected = {map: int},
 })
 
 exports.MyRoomState = MyRoomState;
