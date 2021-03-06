@@ -1,6 +1,6 @@
 const schema = require('@colyseus/schema');
-const Player = require('C:\\Users\\Louis\\nodeTest\\my-colyseus-app\\src\\rooms\\schema\\Player').Player
-const Matrix = require('C:\\Users\\Louis\\nodeTest\\my-colyseus-app\\src\\rooms\\schema\\Matrix').Matrix
+const Player = require('./Player').Player
+const Matrix = require('./Matrix').Matrix
 
 class MyRoomState extends schema.Schema {
 

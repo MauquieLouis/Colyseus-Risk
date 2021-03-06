@@ -30,6 +30,7 @@ var host = window.document.location.host.replace(/:.*/, '');
 					var div = document.createElement('div')
 					div.id = i+'.'+j
 					div.style = "display:inline-block; height:40px; width:40px; border:1px solid black;"
+					div.classList.add("caseMatrix")
 					matrixZone.appendChild(div)
 					//matrixZone.innerHTML+=("<div id='"+i+"."+j+"'style='display:inline-block; height:40px; width:40px; border:1px solid black;'></div>")
 //					console.log(document.getElementById("0.0").addEventListener("click",function(){console.log("Hey")}))			
