@@ -79,6 +79,8 @@ var host = window.document.location.host.replace(/:.*/, '');
         document.querySelector("#form").onsubmit = function(e) {
             e.preventDefault();
 
+			texte = document.getElementById('UserConnected')
+			texte.style.color=changeColorFunction()
             var input = document.querySelector("#input");
 
 //            console.log("input:", input.value);
@@ -89,6 +91,15 @@ var host = window.document.location.host.replace(/:.*/, '');
             // clear input
             input.value = "";
         }
+		document.querySelector("#testnico").onsubmit = function(e) {
+            e.preventDefault();
+			var a = Math.floor(Math.random() * 8);
+			var b = Math.floor(Math.random() * 8);
+			console.log(a,b);
+			room.send("destroy",[a,b]);
+		}
+
+
 		document.querySelector("#formUsername").onsubmit = function(e){
 			e.preventDefault();
 			var inputUsername = document.querySelector("#inputUsername");
