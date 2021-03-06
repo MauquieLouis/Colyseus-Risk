@@ -16,16 +16,3 @@ schema.defineTypes(Matrix, {
 });
 
 exports.Matrix = Matrix
-
-/*class MatrixState extends Schema{
-	constructor(){
-		super();
-		this.matrix = new Matrix();
-	}
-	
-}
-schema.defineTypes(MatrixState,{
-	Matrix: exports.Matrix
-})
-
-exports.MatrixState = MatrixState*/
