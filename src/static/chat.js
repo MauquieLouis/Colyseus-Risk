@@ -25,6 +25,7 @@ var host = window.document.location.host.replace(/:.*/, '');
 		room.onMessage("matrixInit", function(message) {
 			matrixZone = document.getElementById('matrix')
 			matrixZone.innerHTML = '';
+			console.log(message)
 			for(var i=0; i<message.length; i++){
 				for(var j=0; j<message.length; j++){
 					var div = document.createElement('div')
@@ -101,11 +102,25 @@ var host = window.document.location.host.replace(/:.*/, '');
 		}
 
 
+
+
+
+
+
 		document.querySelector("#formUsername").onsubmit = function(e){
 			e.preventDefault();
 			var inputUsername = document.querySelector("#inputUsername");
 //			console.log("inputUsername: ",inputUsername.value)
 			room.send("author",inputUsername.value)
+		}
+		
+		document.querySelector("#testRomain").onsubmit = function(e) {
+            e.preventDefault();
+			var i = Math.floor(Math.random() * 8);
+			var j = Math.floor(Math.random() * 8);
+			coord = [i,j]
+			room.send("randomyellowcolor",coord)
+			console.log("cam arche")
 		}
       });
 

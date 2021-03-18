@@ -29,7 +29,22 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 			console.log(player.nom, 'est le nouveau pseudo de ', client.sessionId)
 			this.broadcast("listUserConnected", this.state.players)
 		});
-		 		
+		 	
+		//testnico
+		this.onMessage("destroy",(client, message)=>{
+			console.log(message)
+			const matrix = this.state.matrix;
+			matrix.matrix[message[0]][message[1]] = "#000000";
+			this.broadcast("matrixChange", matrix.matrix);
+		})
+		
+		
+		
+		
+		
+		
+		
+			
     	this.onMessage("message", (client, message) => {
 			const player = this.state.players.get(client.sessionId);
       		console.log("ChatRoom received message from", client.sessionId, ":", message);
@@ -42,19 +57,19 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 			const player = this.state.players.get(client.sessionId);
 			const matrix = this.state.matrix
 			matrix.matrix[message[0]][message[1]] = player.color
+			console.log(matrix.matrix)
 			this.broadcast("matrixChange", matrix.matrix)
 			console.log(message)
 			console.log(this.state.players.get(client.sessionId).connected)
 		})
 		
-		//testnico
-		this.onMessage("destroy",(client, message)=>{
-			console.log(message)
-			const matrix = this.state.matrix;
-			matrix.matrix[message[0]][message[1]] = "#000000";
-			this.broadcast("matrixChange", matrix.matrix);
-		})
 		
+		
+		this.onMessage("randomyellowcolor",(client, message)=>{
+			const matrix = this.state.matrix
+			matrix.matrix[message[0]][message[1]] = "yellow"
+			this.broadcast("matrixChange", matrix.matrix)
+			})
 	}
 
 	onJoin (client, options) {
