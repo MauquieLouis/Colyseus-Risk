@@ -47,12 +47,11 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 			console.log(this.state.players.get(client.sessionId).connected)
 		})
 		
-		//testnico
-		this.onMessage("destroy",(client, message)=>{
-			console.log(message)
-			const matrix = this.state.matrix;
-			matrix.matrix[message[0]][message[1]] = "#000000";
-			this.broadcast("matrixChange", matrix.matrix);
+		//testNicoclickterritoire
+		this.onMessage("territoireClicked",(client, message)=>{
+			const player = this.state.players.get(client.sessionId);
+			console.log(client.sessionId)
+			console.log(message);
 		})
 		
 	}
