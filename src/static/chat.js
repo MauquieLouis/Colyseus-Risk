@@ -30,7 +30,6 @@ var host = window.document.location.host.replace(/:.*/, '');
 					var div = document.createElement('div')
 					div.id = i+'.'+j
 					div.style = "display:inline-block; height:40px; width:40px; border:1px solid black;"
-					div.classList.add("caseMatrix")
 					matrixZone.appendChild(div)
 					//matrixZone.innerHTML+=("<div id='"+i+"."+j+"'style='display:inline-block; height:40px; width:40px; border:1px solid black;'></div>")
 //					console.log(document.getElementById("0.0").addEventListener("click",function(){console.log("Hey")}))			
@@ -80,8 +79,6 @@ var host = window.document.location.host.replace(/:.*/, '');
         document.querySelector("#form").onsubmit = function(e) {
             e.preventDefault();
 
-			texte = document.getElementById('UserConnected')
-			texte.style.color=changeColorFunction()
             var input = document.querySelector("#input");
 
 //            console.log("input:", input.value);
@@ -92,21 +89,22 @@ var host = window.document.location.host.replace(/:.*/, '');
             // clear input
             input.value = "";
         }
-		document.querySelector("#testnico").onsubmit = function(e) {
-            e.preventDefault();
-			var a = Math.floor(Math.random() * 8);
-			var b = Math.floor(Math.random() * 8);
-			console.log(a,b);
-			room.send("destroy",[a,b]);
-		}
-
-
 		document.querySelector("#formUsername").onsubmit = function(e){
 			e.preventDefault();
 			var inputUsername = document.querySelector("#inputUsername");
 //			console.log("inputUsername: ",inputUsername.value)
 			room.send("author",inputUsername.value)
 		}
+		var territoires = document.getElementsByTagName("g")[1]
+console.log(territoires.children)
+for(var i = 0; i<territoires.children.length; i++){
+	document.getElementById(territoires.children[i].id).addEventListener("click",function(){
+	var inputUsername = document.querySelector("#inputUsername");
+	console.log(this.id, inputUsername.value);
+	var message = [this.id,inputUsername.value]
+	room.send("territoireClicked",message)
+	})
+}
       });
 
 function changeColorFunction(){
@@ -118,3 +116,14 @@ function changeColorFunction(){
 //	console.log(color)
 	return color;
 }
+function coord(event){
+
+var e = event || window.event;
+console.log(e.layerX,e.layerY)
+}
+var map = document.getElementById('map')
+map.addEventListener("click", function(){
+	var coord = elementPosition(map);
+	console.log(map)
+	console.log(coord)
+})

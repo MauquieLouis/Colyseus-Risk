@@ -1,13 +1,31 @@
-.droite{
-	border:2px solid black;
-	display:inline-block;
+.map{
+	background-color: powderblue;
+}
+.map path{
+	fill:white;
+	stroke: black;
+	stroke-width: 3px;
 }
 
-.gauche{
-	border:2px solid black;
-	display:inline-block;
+.map text{
+	fill: black;
+	font: bold 15px sans-serif;
 }
-.caseMatrix:hover
-{
-	background:#ABABAB;
+.Oceanie:hover{
+	fill:violet;
+}
+.NA:hover{
+	fill:yellow;
+}
+.SA:hover{
+	fill:rgb(255, 0, 0);
+}
+.EU:hover{
+	fill:blue;
+}
+.Asie:hover{
+	fill:green;
+}
+.Afrique:hover{
+	fill:brown;
 }
