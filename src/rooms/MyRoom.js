@@ -4,7 +4,7 @@ const colyseus = require('colyseus');
 const MyRoomState = require('./schema/MyRoomState').MyRoomState;
 //Include Player class
 const Player = require('./schema/Player').Player
-//Include Matrix class
+const Territoire = require('./schema/Territoire').Territoire
 //const Matrix = require('./schema/Matrix').Matrix;
 
 exports.MyRoom = class MyRoom extends colyseus.Room {
@@ -48,17 +48,45 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 		})
 		
 		//testNicoclickterritoire
+		
 		this.onMessage("territoireClicked",(client, message)=>{
 			const player = this.state.players.get(client.sessionId);
+			console.log("Territoire clicked")
 			console.log(client.sessionId)
 			console.log(message);
+			var territoire = new Territoire("0","0","0");
+			territoire = this.state.carte.get(message)
+			console.log(this.state.carte.get(message))
+			console.log(territoire.nom)
+			territoire.proprietaire = client.sessionId
+			this.state.carte.set(message,territoire)
+			this.state.carte.forEach((value, index) => {
+				console.log(index+" : "+value.nom+", "+value.continent+", "+value.proprietaire)
+			})
+			this.broadcast("carteChange", [this.state.players,this.state.carte])
 		})
 		
+		//Implementer la fonction qui rempli la map carte en fonction du tableau javascript renvoyé !=
+		this.onMessage("carte",(client, message)=>{
+			console.log("This :"+message);
+			console.log(message.length);
+			for(var i = 0; i<41; i++){
+				this.state.carte.set(message[i]['name'],new Territoire(message[i]['name'],message[i]['continent'],message[i]['proprietaire']))
+			}
+			var peru = this.state.carte.get('peru')
+			console.log(this.state.carte.get('peru').nom)
+		})
 	}
+	
 
 	onJoin (client, options) {
 		this.state.players.set(client.sessionId, new Player());
 		const matrix = this.state.matrix
+		if(this.state.carteInit==false)
+		{
+			this.broadcast("CarteInit",this.state.carte);
+			this.state.carteInit = true;
+		}
 		// Affichage de la matrice
 		this.broadcast("matrixInit",matrix.matrix)
 		this.broadcast("matrixChange", matrix.matrix)

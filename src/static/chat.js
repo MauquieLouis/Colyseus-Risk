@@ -20,49 +20,70 @@ var host = window.document.location.host.replace(/:.*/, '');
 //            p.innerText = message;
 //            document.querySelector("#chatBox").appendChild(p);
         });
+		room.onMessage("CarteInit", function(message){
+			console.log(message)
+			var territoires = document.getElementsByTagName("g")[1]
+			for(var i = 0; i<territoires.children.length; i++){
+				message[i] = 
+				{
+					"name": territoires.children[i].id,
+				 	"continent":territoires.children[i].className['animVal'],
+			 		"proprietaire":"none",
+				}
+			}
+			room.send("carte",message)
+		});
+		
+		room.onMessage("carteChange",function(message){
+			console.log(message[0])
+			console.log(message[1])
+			message[1].forEach((value, index) => {
+				console.log(index+" : "+value.nom+", "+value.continent+", "+value.proprietaire)
+			})
+			
+		})
 		
 		// Initialisation de la matrice : afficahge côté client
-		room.onMessage("matrixInit", function(message) {
-			matrixZone = document.getElementById('matrix')
-			matrixZone.innerHTML = '';
-			for(var i=0; i<message.length; i++){
-				for(var j=0; j<message.length; j++){
-					var div = document.createElement('div')
-					div.id = i+'.'+j
-					div.style = "display:inline-block; height:40px; width:40px; border:1px solid black;"
-					matrixZone.appendChild(div)
-					//matrixZone.innerHTML+=("<div id='"+i+"."+j+"'style='display:inline-block; height:40px; width:40px; border:1px solid black;'></div>")
-//					console.log(document.getElementById("0.0").addEventListener("click",function(){console.log("Hey")}))			
-				}
-				matrixZone.innerHTML+=("</br>")
-			}
-			setTimeout(function(){
-				for(var i=0; i<message.length; i++){
-					for(var j=0; j<message.length; j++){
-						document.getElementById(i+'.'+j).addEventListener("click",function(){
-						coord = this.id.split(".")
-						room.send("caseClicked", coord)
-						})			
-					}
-				}
-			},20)
-        });
-		room.onMessage("matrixChange", function(message){
-//			console.log('matrixChange')
-//			console.log(message)
-			for(var i=0; i<message.length; i++){
-				for(var j=0; j<message.length; j++){
-					if(message[i][j] != document.getElementById(i+'.'+j).value){
-						document.getElementById(i+'.'+j).style.backgroundColor = message[i][j]
-					}
-				}
-			}
-		})
+//		room.onMessage("matrixInit", function(message) {
+//			matrixZone = document.getElementById('matrix')
+//			matrixZone.innerHTML = '';
+//			for(var i=0; i<message.length; i++){
+//				for(var j=0; j<message.length; j++){
+//					var div = document.createElement('div')
+//					div.id = i+'.'+j
+//					div.style = "display:inline-block; height:40px; width:40px; border:1px solid black;"
+//					matrixZone.appendChild(div)
+//					//matrixZone.innerHTML+=("<div id='"+i+"."+j+"'style='display:inline-block; height:40px; width:40px; border:1px solid black;'></div>")
+////					console.log(document.getElementById("0.0").addEventListener("click",function(){console.log("Hey")}))			
+//				}
+//				matrixZone.innerHTML+=("</br>")
+//			}
+//			setTimeout(function(){
+//				for(var i=0; i<message.length; i++){
+//					for(var j=0; j<message.length; j++){
+//						document.getElementById(i+'.'+j).addEventListener("click",function(){
+//						coord = this.id.split(".")
+//						room.send("caseClicked", coord)
+//						})			
+//					}
+//				}
+//			},20)
+//        });
+//		room.onMessage("matrixChange", function(message){
+////			console.log('matrixChange')
+////			console.log(message)
+//			for(var i=0; i<message.length; i++){
+//				for(var j=0; j<message.length; j++){
+//					if(message[i][j] != document.getElementById(i+'.'+j).value){
+//						document.getElementById(i+'.'+j).style.backgroundColor = message[i][j]
+//					}
+//				}
+//			}
+//		})
 		
 		room.onMessage("listUserConnected", function(message){
 			listUser = document.getElementById('userList')
 			listUser.innerHTML = ''
-			console.log(message["FWP4Y0wof"])
 			for(const[key, value] of Object.entries(message))
 			{
 				console.log(key+" : "+value.nom+" : "+value.color)
@@ -96,12 +117,11 @@ var host = window.document.location.host.replace(/:.*/, '');
 			room.send("author",inputUsername.value)
 		}
 		var territoires = document.getElementsByTagName("g")[1]
-console.log(territoires.children)
+//console.log(territoires.children)
 for(var i = 0; i<territoires.children.length; i++){
 	document.getElementById(territoires.children[i].id).addEventListener("click",function(){
-	var inputUsername = document.querySelector("#inputUsername");
-	console.log(this.id, inputUsername.value);
-	var message = [this.id,inputUsername.value]
+	console.log(this.id);
+	var message = this.id
 	room.send("territoireClicked",message)
 	})
 }
@@ -116,14 +136,14 @@ function changeColorFunction(){
 //	console.log(color)
 	return color;
 }
-function coord(event){
-
-var e = event || window.event;
-console.log(e.layerX,e.layerY)
-}
-var map = document.getElementById('map')
-map.addEventListener("click", function(){
-	var coord = elementPosition(map);
-	console.log(map)
-	console.log(coord)
-})
+//function coord(event){
+//
+////var e = event || window.event;
+////console.log(e.layerX,e.layerY)
+////}
+////var map = document.getElementById('map')
+////map.addEventListener("click", function(){
+////	var coord = elementPosition(map);
+////	console.log(map)
+////	console.log(coord)
+////})

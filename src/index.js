@@ -54,5 +54,5 @@ app.use('/', express.static(path.join(__dirname, "static")));
 // register colyseus monitor AFTER registering your room handlers
 app.use("/colyseus", monitor());
 
-gameServer.listen(port,'25.101.51.79');
+gameServer.listen(port);
 console.log(`Listening on ws://localhost:${ port }`)
