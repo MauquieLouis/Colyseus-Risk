@@ -76,6 +76,35 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 			var peru = this.state.carte.get('peru')
 			console.log(this.state.carte.get('peru').nom)
 		})
+		
+		//GetStarted
+		var nbplayersstarted = 0
+		this.onMessage("GetStarted",(client)=>{
+			console.log("GetStarted "+client.sessionId)
+			var nbplayers = this.state.players.size - nbplayersstarted
+			var nbterritoireslibres = 0
+			this.state.carte.forEach((value) =>{
+				if(value.proprietaire == "none"){
+					nbterritoireslibres++
+				}
+			})
+//			console.log(nbterritoireslibres)
+			var compteur = Math.floor(nbterritoireslibres/nbplayers)
+			var i = 0
+			while(i<compteur){
+				var k = -1
+				var a = Math.floor(Math.random() * 42)
+				this.state.carte.forEach((value) =>{
+				k++
+				if(k == a && value.proprietaire == "none"){
+					value.proprietaire=client.sessionId
+					i++
+				}
+			})			
+			}
+			nbplayersstarted++
+			this.broadcast("carteChange", [this.state.players,this.state.carte])
+		})
 	}
 	
 

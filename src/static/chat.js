@@ -36,10 +36,10 @@ var host = window.document.location.host.replace(/:.*/, '');
 		});
 		
 		room.onMessage("carteChange",function(message){
-//			console.log(message[0])
-//			console.log(message[1])
+			console.log(message[0])
+			console.log(message[1])
 			for (const[key, value] of Object.entries(message[1])){
-				console.log(key+" : "+value.nom)
+//				console.log(key+" : "+value.nom)
 				var territoire = document.getElementById(key)
 				if(value.proprietaire != "none"){
 //					console.log(message[0][value.proprietaire].color)
@@ -120,6 +120,12 @@ var host = window.document.location.host.replace(/:.*/, '');
 			var inputUsername = document.querySelector("#inputUsername");
 //			console.log("inputUsername: ",inputUsername.value)
 			room.send("author",inputUsername.value)
+		}
+//GetStarted		
+		document.querySelector("#GetStarted").onsubmit = function(e){
+			e.preventDefault();
+			room.send("GetStarted")
+			document.getElementById("GetStarted").style.display = "none"
 		}
 		var territoires = document.getElementsByTagName("g")[1]
 //console.log(territoires.children)
