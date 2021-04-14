@@ -30,17 +30,22 @@ var host = window.document.location.host.replace(/:.*/, '');
 				 	"continent":territoires.children[i].className['animVal'],
 			 		"proprietaire":"none",
 				}
+				console.log(territoires[i])
 			}
 			room.send("carte",message)
 		});
 		
 		room.onMessage("carteChange",function(message){
-			console.log(message[0])
-			console.log(message[1])
-			message[1].forEach((value, index) => {
-				console.log(index+" : "+value.nom+", "+value.continent+", "+value.proprietaire)
-			})
-			
+//			console.log(message[0])
+//			console.log(message[1])
+			for (const[key, value] of Object.entries(message[1])){
+				console.log(key+" : "+value.nom)
+				var territoire = document.getElementById(key)
+				if(value.proprietaire != "none"){
+//					console.log(message[0][value.proprietaire].color)
+					territoire.style.fill = message[0][value.proprietaire].color
+				}
+			}
 		})
 		
 		// Initialisation de la matrice : afficahge côté client

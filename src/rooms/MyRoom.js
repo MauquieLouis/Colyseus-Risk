@@ -70,7 +70,7 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 		this.onMessage("carte",(client, message)=>{
 			console.log("This :"+message);
 			console.log(message.length);
-			for(var i = 0; i<41; i++){
+			for(var i = 0; i<42; i++){
 				this.state.carte.set(message[i]['name'],new Territoire(message[i]['name'],message[i]['continent'],message[i]['proprietaire']))
 			}
 			var peru = this.state.carte.get('peru')
