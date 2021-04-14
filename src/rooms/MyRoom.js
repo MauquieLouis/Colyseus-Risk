@@ -88,6 +88,7 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 			this.state.carteInit = true;
 		}
 		// Affichage de la matrice
+		this.broadcast("carteChange", [this.state.players,this.state.carte])
 		this.broadcast("matrixInit",matrix.matrix)
 		this.broadcast("matrixChange", matrix.matrix)
 		console.log(this.state.players)
