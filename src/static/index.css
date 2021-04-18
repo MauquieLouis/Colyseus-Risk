@@ -6,11 +6,12 @@
 	stroke: black;
 	stroke-width: 3px;
 }
-
+/* c'est les caractéristiques des chiffres */
 .map text{
 	fill: black;
 	font: bold 15px sans-serif;
 }
+
 .Oceanie:hover{
 	fill:violet;
 }
@@ -28,4 +29,9 @@
 }
 .Afrique:hover{
 	fill:brown;
+}
+
+/* ne marche pas */
+.GetStarted:click{
+	display: none;
 }
