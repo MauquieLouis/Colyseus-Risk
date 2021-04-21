@@ -1,10 +1,9 @@
 .map{
-	background-color: powderblue;
+	background-color: lightskyblue;
 }
 .map path{
-	fill:white;
 	stroke: black;
-	stroke-width: 3px;
+	stroke-width: 1px;
 }
 /* c'est les caractéristiques des chiffres */
 .map text{
@@ -12,22 +11,22 @@
 	font: bold 15px sans-serif;
 }
 
-.Oceanie:hover{
+.Oceanie{
 	fill:violet;
 }
-.NA:hover{
+.NA{
 	fill:yellow;
 }
-.SA:hover{
+.SA{
 	fill:rgb(255, 0, 0);
 }
-.EU:hover{
+.EU{
 	fill:blue;
 }
-.Asie:hover{
+.Asie{
 	fill:green;
 }
-.Afrique:hover{
+.Afrique{
 	fill:brown;
 }
 
@@ -35,3 +34,4 @@
 .GetStarted:click{
 	display: none;
 }
+

@@ -36,15 +36,23 @@ var host = window.document.location.host.replace(/:.*/, '');
 		});
 		
 		room.onMessage("carteChange",function(message){
-			console.log(message[0])
-			console.log(message[1])
+//			console.log(message[0])
+//			console.log(message[1])
 			for (const[key, value] of Object.entries(message[1])){
 //				console.log(key+" : "+value.nom)
 				var territoire = document.getElementById(key)
+				var army = document.getElementById(key+"Army")
+				if(army != null){army.innerHTML=value.army}
 				if(value.proprietaire != "none"){
 //					console.log(message[0][value.proprietaire].color)
 					territoire.style.fill = message[0][value.proprietaire].color
 				}
+			}
+			stockList = document.getElementById('stockList')
+			stockList.innerHTML = ''
+			for(const[key, value] of Object.entries(message[0]))
+			{
+				stockList.innerHTML += ('<span style="color:'+value.color+'">'+value.nom+' a '+value.stock+' pions à placer'+'</span></br>')
 			}
 		})
 		
@@ -101,6 +109,15 @@ var host = window.document.location.host.replace(/:.*/, '');
 //			}
 		})
 		
+		room.onMessage("activePlayer", function(message){
+			document.getElementById("joueurActifDisplay").style.color=message[1]
+			document.getElementById("joueurActifDisplay").innerHTML=message[0]+" est en train de jouer"
+		})
+		
+		room.onMessage("GameHasStarted",function(){
+			document.getElementById("GetStarted").style.display = "none"
+		})
+		
         // send message to room on submit
         document.querySelector("#form").onsubmit = function(e) {
             e.preventDefault();
@@ -125,7 +142,6 @@ var host = window.document.location.host.replace(/:.*/, '');
 		document.querySelector("#GetStarted").onsubmit = function(e){
 			e.preventDefault();
 			room.send("GetStarted")
-			document.getElementById("GetStarted").style.display = "none"
 		}
 		var territoires = document.getElementsByTagName("g")[1]
 //console.log(territoires.children)
