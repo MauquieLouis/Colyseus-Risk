@@ -108,14 +108,29 @@ var host = window.document.location.host.replace(/:.*/, '');
 //				console.log(message[i])
 //			}
 		})
-		
+		//Display ActivePlayer
 		room.onMessage("activePlayer", function(message){
 			document.getElementById("joueurActifDisplay").style.color=message[1]
 			document.getElementById("joueurActifDisplay").innerHTML=message[0]+" est en train de jouer"
 		})
-		
+		//disparition du bouton lancer la partie
 		room.onMessage("GameHasStarted",function(){
 			document.getElementById("GetStarted").style.display = "none"
+		})
+
+		room.onMessage("CombienDeplacer",function(message){
+			if(!message[2]){
+				prompt("Vous ne pouvez pas effectuer ce déplacement")
+				room.send("Nbdeplacements","impossible")
+				}
+			else{
+			var deplacemement = parseInt(prompt("Choisissez un nombre d'armées à déplacer entre 0 et "+message[2]))
+			while(isNaN(deplacemement) || deplacemement < 0 || deplacemement > message[2] ){
+					deplacemement = parseInt(prompt("Erreur!! Choisissez un nombre d'armées à déplacer entre 0 et "+message[2]))
+			}
+			console.log("message envoyé "+ deplacemement)
+			room.send("Nbdeplacements",[message[0],message[1],deplacemement])
+			}
 		})
 		
         // send message to room on submit

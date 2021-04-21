@@ -49,44 +49,109 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 		
 		//testNicoclickterritoire
 		
+		var deplacementencours = false
+		var deplacementdepuis = 0
+
 		this.onMessage("territoireClicked",(client, message)=>{
 			const player = this.state.players.get(client.sessionId);
-			console.log("Territoire clicked")
-			console.log(client.sessionId)
-			console.log(message);
+			console.log("Territoire clicked",state)
+//			console.log(client.sessionId)
+//			console.log(message);
 			var territoire = new Territoire("0","0","0","0");
 			territoire = this.state.carte.get(message)
-			console.log(this.state.carte.get(message))
-			console.log(territoire.nom)
+//			console.log(this.state.carte.get(message))
+//			console.log(territoire.nom)
+		if(state=="placementInitial" ){
+			if(IdActif==client.sessionId && player.stock==0){
+				console.log("le state a été mis en déplacement")
+				state="deplacement" //a terme il faudra mettre attaque ici
+			}
 			if(territoire.proprietaire == client.sessionId && IdActif == client.sessionId && player.stock!=0){
 				territoire.army++
 				player.stock--
 				PasserLaMain()
 				this.broadcast("activePlayer",[this.state.players.get(IdActif).nom,this.state.players.get(IdActif).color])
+				this.broadcast("carteChange", [this.state.players,this.state.carte])
 			}
-			if(territoire.proprietaire == client.sessionId && IdActif == client.sessionId && player.stock==0){
-				console.log("ça marcche")
+		}
+		if(state=="deplacement"){	
+			if(territoire.proprietaire == client.sessionId && IdActif == client.sessionId && !deplacementencours){
+				deplacementdepuis = territoire
+				console.log("le deplacement est en cours")
 			}
-			this.state.carte.set(message,territoire)
-			this.state.carte.forEach((value, index) => {
-				console.log(index+" : "+value.nom+", "+value.continent+", "+value.proprietaire+", "+value.army)
-			})
+			if(territoire.proprietaire == client.sessionId && IdActif == client.sessionId && deplacementencours){
+				console.log("on teste si c'est possible tkt")
+				var max = IsDeplacement_possible(deplacementdepuis,territoire) //max vaut false si le deplacement est impossible
+				client.send("CombienDeplacer",[deplacementdepuis,territoire,max])				
+			}
+			if(deplacementencours){deplacementencours=false};if(!deplacementencours){deplacementencours=true}
+		}
+//			this.state.carte.set(message,territoire)
+//			this.state.carte.forEach((value, index) => {
+//				console.log(index+" : "+value.nom+", "+value.continent+", "+value.proprietaire+", "+value.army)
+//			})
+		})
+
+		//Gestion des déplacements
+		this.onMessage("Nbdeplacements",(client, message)=>{
+			console.log("message reçu")
+			if(message!="impossible"){
+//				console.log("possible",message[0],message[1])
+			console.log(this.state.carte.get(message[0].nom).army)
+			message[0].army -= message[2]
+			message[1].army += message[2]
+			this.state.carte.set(message[0].nom,message[0])
+			this.state.carte.set(message[1].nom,message[1])
+			PasserLaMain()
+//				console.log("possible",message[0],message[1])
+			this.broadcast("activePlayer",[this.state.players.get(IdActif).nom,this.state.players.get(IdActif).color])
 			this.broadcast("carteChange", [this.state.players,this.state.carte])
+			console.log("broadcastdone")
+			console.log(this.state.carte.get(message[0].nom).army)
+			}
+			deplacementencours=false
 		})
 		
 		//Implementer la fonction qui rempli la map carte en fonction du tableau javascript renvoyé !=
 		this.onMessage("carte",(client, message)=>{
-			console.log("This :"+message);
-			console.log(message.length);
+//			console.log("This :"+message);
+//			console.log(message.length);
+//			console.log(getVoisins("siberia"))
 			for(var i = 0; i<42; i++){
-				this.state.carte.set(message[i]['name'],new Territoire(message[i]['name'],message[i]['continent'],message[i]['proprietaire'],getVoisins(message[i]['name'])))
+				this.state.carte.set(message[i]['name'],new Territoire(message[i]['name'],message[i]['continent'],message[i]['proprietaire']))
+				}
+			for(var i = 0; i<42; i++){
+				var L =[]
+//				console.log(message[i]['name'])
+//				console.log(getVoisins(message[i]['name']))
+//				console.log(getVoisins(message[i]['name']).length)
+//				for( var j = 0; j<getVoisins(message[i]['name']).length; j++){
+//					L.push(this.state.carte.get(message[i]['name'][j]))
+//				}
+				getVoisins(message[i]['name']).forEach((name)=>{
+					L.push(this.state.carte.get(name))
+					if(this.state.carte.get(name)==undefined){console.log("erreur en "+message[i]['name']+" "+name)}
+				})
+				this.state.carte.get(message[i]['name']).voisins=L
+//				console.log(message[i]['name'], getVoisins(message[i]['name']))
 			}
 			var peru = this.state.carte.get('peru')
-			console.log(this.state.carte.get('peru').nom)
+//			console.log(peru)
+//			console.log(getVoisins('argentina'))
+	//		console.log(this.state.carte.get('argentina'))
+		//	console.log(getVoisins('venezuela'))
+//			console.log(this.state.carte.get('venezuela'))
+	//		console.log(getVoisins('brazil'))
+			var brazil = this.state.carte.get('brazil')
+		//	console.log(brazil)
+//			console.log(getVoisins('brazil'))
+//			console.log("peru.voisins : "+this.state.carte.get('peru').voisins[0].voisins)
+//			console.log("brasil.voisins : "+this.state.carte.get('peru').voisins[0].voisins[0].nom)
 		})
 		
 		//LANCEMENT DE LA PARTIE !!! :D (la joie et le bonne humeur se répandent grâce à nous <3)
 		var nbplayersstarted = 0
+		var state = "placementInitial"
 		this.onMessage("GetStarted",(client)=>{
 			this.broadcast("GameHasStarted")
 			Order.forEach((Id) => {
@@ -179,6 +244,7 @@ function PasserLaMain(){
 	
 }
 
+
 //Gestion du stock de départ
 function originalStock(nbPlayers){
 	return 50-5*nbPlayers
@@ -209,11 +275,11 @@ function getVoisins(name){
 	if(name=="china"){return ["afghanistan","siam","india","ural","siberia","mongolia"]}
 	if(name=="mongolia"){return ["china","siberia","japan","kamchatka","irkutsk"]}
 	if(name=="japan"){return ["kamchatka","mongolia"]}
-	if(name=="siberia"){return ["ural","china","mongolia","yakursk","irkursk"]}
+	if(name=="siberia"){return ["ural","china","mongolia","yakursk","irkutsk"]}
 	if(name=="ural"){return ["russia","afghanistan","china","siberia"]}
-	if(name=="irkutsk"){return ["mongolia","siberia","kamchatka","yakutsk"]}
-	if(name=="yakutsk"){return ["irkutsk","kamchatka","siberia"]}
-	if(name=="kamchatka"){return ["irkutsk","yakutsk","japan","mongolia","alaska"]}
+	if(name=="irkutsk"){return ["mongolia","siberia","kamchatka","yakursk"]}
+	if(name=="yakursk"){return ["irkutsk","kamchatka","siberia"]}
+	if(name=="kamchatka"){return ["irkutsk","yakursk","japan","mongolia","alaska"]}
 	if(name=="russia"){return ["ural","afghanistan","middle_east","southern_europe","northern_europe","scandinavia"]}
 	if(name=="scandinavia"){return ["russia","iceland","great_britain","northern_europe"]}
 	if(name=="northern_europe"){return ["southern_europe","russia","scandinavia","western_europe","great_britain"]}
@@ -240,4 +306,71 @@ function getVoisins(name){
 	if(name=="madagascar"){return ["south_africa","east_africa"]}
 	if(name=="south_africa"){return ["madagascar","congo","east_africa"]}
 	if(name=="congo"){return ["south_africa","north_africa","east_africa"]}
+//	var M =[]
+//	L.forEach((nom)=>{
+//		M.push(this.state.get(nom))
+//	})
+//	return M
+	
 }
+
+
+//Savoir si le territoire se trouve parmi une liste
+function Deplacement_estPresent(Territoire,liste){
+    for(var i =0;i < liste.length;i++){
+        if (liste[i].nom == Territoire.nom){
+            return true
+        }
+    }
+    return false
+}
+
+//Renvoie une liste des terrioires voisins avec même propriétaire
+function Deplacement_voisinsMemeProprio(Territoire){
+    voisins = []
+//	console.log(Territoire.nom, Territoire.army, Territoire.proprietaire, Territoire.voisins)
+    for (var i =0 ; i < Territoire.voisins.length ; i++){
+        if (Territoire.proprietaire == Territoire.voisins[i].proprietaire ){
+            voisins.push(Territoire.voisins[i])
+        }
+    }
+    return voisins
+}
+
+//Savoir si l'on va pouvoir effectuer le déplacement
+function Deplacement_sontRelies(Territoire1,Territoire2){
+    var status = false;
+    var passes = [];
+    var encours = [];
+    encours.push(Territoire1);
+    while( !status && (encours.length != 0) ){
+        var terri = encours.shift()
+        passes.push(terri)
+//		console.log("terri : "+terri.nom, terri.army, terri.proprietaire, terri.voisins)
+        var voisinsMemeProprio = Deplacement_voisinsMemeProprio(terri)
+        for (var i = 0; i < voisinsMemeProprio.length;i++){
+            if (voisinsMemeProprio[i].nom == Territoire2.nom){
+                return true
+            }
+            var presentEnCours = Deplacement_estPresent(voisins[i],encours)
+            var presentPasses = Deplacement_estPresent(voisins[i],passes)
+            if (!presentEnCours && !presentPasses){
+                encours.push(voisins[i])
+            }
+        }
+    }
+    return false
+}
+
+//Effectuer le déplacement
+function IsDeplacement_possible(Territoire1,Territoire2){
+    var possible = Deplacement_sontRelies(Territoire1,Territoire2)
+    if(possible && Territoire1.army > 1){
+        var max = Territoire1.army - 1
+		return max
+    }
+    return false
+}
+
+
+				
