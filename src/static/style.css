@@ -1,0 +1,11 @@
+.leaderboard
+{
+	border:3px solid #CECECE;
+}
+.toCenter
+{
+	border:1px solid red;
+/* 	position:absolute; */
+	left:50%;
+	transform:translate(-50%,);
+}
