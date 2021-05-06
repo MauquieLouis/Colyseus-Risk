@@ -1,13 +1,37 @@
-.droite{
-	border:2px solid black;
-	display:inline-block;
+.map{
+	background-color: lightskyblue;
+}
+.map path{
+	stroke: black;
+	stroke-width: 1px;
+}
+/* c'est les caractéristiques des chiffres */
+.map text{
+	fill: black;
+	font: bold 15px sans-serif;
 }
 
-.gauche{
-	border:2px solid black;
-	display:inline-block;
+.Oceanie{
+	fill:violet;
 }
-.caseMatrix:hover
-{
-	background:#ABABAB;
+.NA{
+	fill:yellow;
 }
+.SA{
+	fill:rgb(255, 0, 0);
+}
+.EU{
+	fill:blue;
+}
+.Asie{
+	fill:green;
+}
+.Afrique{
+	fill:brown;
+}
+
+/* ne marche pas */
+.GetStarted:click{
+	display: none;
+}
+
