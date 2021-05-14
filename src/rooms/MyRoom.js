@@ -25,7 +25,7 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 			console.log("New author name defined :", message)
 			const player = this.state.players.get(client.sessionId);
 			player.nom = message;
-			player.color = changeColorFunction()
+//			player.color = changeColorFunction()
 			console.log(player.nom, 'est le nouveau pseudo de ', client.sessionId)
 			this.broadcast("listUserConnected", this.state.players)
 		});
@@ -389,11 +389,12 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 	}
 
 	onLeave (client, consented) {
+		const player = this.state.players.get(client.sessionId)
+		this.broadcast("messages", [('('+client.sessionId+') : vient malheureusement de partir !'),player.nom,player.color]);
 		this.state.players.delete(client.sessionId)
 		//On actualise la liste des joueurs lorsqu'un joueur se déconnecte
 		this.broadcast("listUserConnected", this.state.players);
 		// 3 paramètre pour message : 1er : le message; 2eme : le pseudo, 3eme : la couleur
-		this.broadcast("messages", [('('+client.sessionId+') : vient malheureusement de partir !'),player.nom,player.color]);
 		console.log("Hey a bitch leave the room");
 	}
 
@@ -426,14 +427,31 @@ function originalStock(nbPlayers){
 }
 
 
+var colors = ['35E520', '18ECD5','EC18E8','DC1717','AB16E8','3D63F1']
+var newColors= [];
 //Generation couleur aléatoire
 function changeColorFunction(){
-	var letters = '0123456789ABCDEF';
-	var color = '#';
-	for (var i = 0; i < 6; i++) {
-		color += letters[Math.floor(Math.random() * 16)];
-	}
+	color = '#'+colors[0]
+	colors.shift();
+//	var color = '#';
+//	var randomNum = Math.floor(Math.random()*colors.length);
+//	color += colors[randomNum]
+//	console.log('randomNum : '+randomNum)
+//	for(var i = 0; i<colors.length; i++)
+//	{
+//		if(i != randomNum)
+//		{
+//			newColors[i] = colors[i];
+//		}
+//	}
+//	console.log('newColor : '+newColors)
+//	colors = newColors;
+//	var letters = '0123456789ABCDEF';
+//	for (var i = 0; i < 6; i++) {
+//		color += letters[Math.floor(Math.random() * 16)];
+//	}
 	console.log(color)
+	console.log(colors)
 	return color;
 }
 
