@@ -385,13 +385,15 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 		// 3 paramètre pour message : 1er : le message; 2eme : le pseudo, 3eme : la couleur
 		console.log(client.sessionId+" joined")
 		Order.push(client.sessionId)
-		this.broadcast("messages", [('('+client.sessionId+') : joined the fucking session !'),player.nom,player.color]);
+		this.broadcast("messages", [('('+client.sessionId+') : vient d\'arriver !'),player.nom,player.color]);
 	}
 
 	onLeave (client, consented) {
 		this.state.players.delete(client.sessionId)
+		//On actualise la liste des joueurs lorsqu'un joueur se déconnecte
+		this.broadcast("listUserConnected", this.state.players);
 		// 3 paramètre pour message : 1er : le message; 2eme : le pseudo, 3eme : la couleur
-		this.broadcast("messages", [('('+client.sessionId+') : left the fucking session !'),player.nom,player.color]);
+		this.broadcast("messages", [('('+client.sessionId+') : vient malheureusement de partir !'),player.nom,player.color]);
 		console.log("Hey a bitch leave the room");
 	}
 

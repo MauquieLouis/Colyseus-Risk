@@ -1,5 +1,5 @@
 var host = window.document.location.host.replace(/:.*/, '');
-
+	  var autoScroll = 0;
       var client = new Colyseus.Client(location.protocol.replace("http", "ws") + "//" + host + (location.port ? ':'+location.port : ''));
       client.joinOrCreate("chat").then(room => {
         console.log("joined the room");
@@ -15,10 +15,12 @@ var host = window.document.location.host.replace(/:.*/, '');
         room.onMessage("messages", function(message) {
 			chatBox = document.getElementById('chatBox')
 			console.log(message)
-			chatBox.innerHTML += ('<span style="color:'+message[2]+';">'+message[1]+' : '+message[0]+'</span></br>')
+			chatBox.innerHTML += ('<div style="color:'+message[2]+';" class="messages"><strong>'+message[1]+' : </strong><span style="color:black;">'+message[0]+'</span></div>')
 //            var p = document.createElement("p");
 //            p.innerText = message;
 //            document.querySelector("#chatBox").appendChild(p);
+			autoScroll+=100
+			document.getElementById('chatBox').scroll(0,autoScroll);
         });
 		
 		room.onMessage("CarteInit", function(message){
@@ -53,7 +55,7 @@ var host = window.document.location.host.replace(/:.*/, '');
 			stockList.innerHTML = ''
 			for(const[key, value] of Object.entries(message[0]))
 			{
-				stockList.innerHTML += ('<span style="color:'+value.color+'">'+value.nom+' a '+value.stock+' pions à placer'+'</span></br>')
+				stockList.innerHTML += ('<span style="color:'+value.color+'"><strong>'+value.nom+'</strong> a <strong>'+value.stock+'</strong> pions à placer'+'</span></br>')
 			}
 		})
 		
@@ -101,7 +103,7 @@ var host = window.document.location.host.replace(/:.*/, '');
 			for(const[key, value] of Object.entries(message))
 			{
 				console.log(key+" : "+value.nom+" : "+value.color)
-				listUser.innerHTML += ('<span id="'+key+'" style="color:'+value.color+'">'+key+' ('+value.nom+')'+'</span></br>')
+				listUser.innerHTML += ('<li style="color:'+value.color+'"><span id="'+key+'" ><strong>'+value.nom+'</strong> ('+key+')'+'</span></li>')
 			}
 //			message.forEach(function(){console.log(value, key)})
 			
@@ -112,7 +114,7 @@ var host = window.document.location.host.replace(/:.*/, '');
 		//Display ActivePlayer
 		room.onMessage("activePlayer", function(message){
 			document.getElementById("joueurActifDisplay").style.color=message[2]
-			document.getElementById("joueurActifDisplay").innerHTML="Phase : " + message[0]+ "<br>" + message[1] + " est en train de jouer"
+			document.getElementById("joueurActifDisplay").innerHTML="<h6 class='fontArrh6' style='display:inline'>Phase</h6> : " + message[0]+ "<br>" + message[1] + " est en train de jouer"
 		})
 		//disparition du bouton lancer la partie
 		room.onMessage("GameHasStarted",function(){
