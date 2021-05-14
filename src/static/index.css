@@ -5,10 +5,14 @@
 	stroke: black;
 	stroke-width: 1px;
 }
-/* c'est les caractéristiques des chiffres */
+/* caractéristiques des chiffres représentant les unités */
 .map text{
 	fill: black;
 	font: bold 15px sans-serif;
+}
+/* caractéritiques du tableau ContinentInfo */
+.map tspan{
+	font: 12px sans-serif;
 }
 
 .Oceanie{
@@ -30,8 +34,4 @@
 	fill:brown;
 }
 
-/* ne marche pas */
-.GetStarted:click{
-	display: none;
-}
 

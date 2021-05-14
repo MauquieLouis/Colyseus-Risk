@@ -6,6 +6,7 @@ const MyRoomState = require('./schema/MyRoomState').MyRoomState;
 const Player = require('./schema/Player').Player
 const Territoire = require('./schema/Territoire').Territoire
 //const Matrix = require('./schema/Matrix').Matrix;
+var GameStarted = false
 
 exports.MyRoom = class MyRoom extends colyseus.Room {
 
@@ -328,6 +329,7 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 		var state = "placementInitial"
 		this.onMessage("GetStarted",(client)=>{
 			this.broadcast("GameHasStarted")
+			GameStarted = true
 			Order.forEach((Id) => {
 //				console.log("GetStarted "+client.sessionId)
 				const player = this.state.players.get(Id)
@@ -364,8 +366,9 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 		})
 	}
 	
-
 	onJoin (client, options) {
+		console.log(GameStarted)
+		if(GameStarted==false){
 		this.state.players.set(client.sessionId, new Player());
 		const matrix = this.state.matrix
 		if(this.state.carteInit==false)
@@ -385,15 +388,19 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 		// 3 paramètre pour message : 1er : le message; 2eme : le pseudo, 3eme : la couleur
 		console.log(client.sessionId+" joined")
 		Order.push(client.sessionId)
-		this.broadcast("messages", [('('+client.sessionId+') : vient d\'arriver !'),player.nom,player.color]);
+		this.broadcast("messages", [('('+client.sessionId+') : joined the fucking session !'),player.nom,player.color]);
+		}
+		else{throw new Error("Partie Complète")}
 	}
 
 	onLeave (client, consented) {
-		this.state.players.delete(client.sessionId)
-		//On actualise la liste des joueurs lorsqu'un joueur se déconnecte
-		this.broadcast("listUserConnected", this.state.players);
+		//console.log(this.state.players.get(client.sessionId))
+		console.log(Order)
+		Order.splice(Order.indexOf(client.sessionId),1)
+		console.log(Order)
+		if(IdActif == client.sessionId){PasserLaMain()}
 		// 3 paramètre pour message : 1er : le message; 2eme : le pseudo, 3eme : la couleur
-		this.broadcast("messages", [('('+client.sessionId+') : vient malheureusement de partir !'),player.nom,player.color]);
+		//this.broadcast("messages", [('('+client.sessionId+') : left the fucking session !'),player.nom,player.color]);
 		console.log("Hey a bitch leave the room");
 	}
 
