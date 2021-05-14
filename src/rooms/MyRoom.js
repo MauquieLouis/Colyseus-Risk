@@ -38,14 +38,14 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 		});
 		
 		//change matrice on click
-		this.onMessage("caseClicked",(client, message)=>{
-			const player = this.state.players.get(client.sessionId);
-			const matrix = this.state.matrix
-			matrix.matrix[message[0]][message[1]] = player.color
-			this.broadcast("matrixChange", matrix.matrix)
-			console.log(message)
-			console.log(this.state.players.get(client.sessionId).connected)
-		})
+//		this.onMessage("caseClicked",(client, message)=>{
+//			const player = this.state.players.get(client.sessionId);
+//			const matrix = this.state.matrix
+//			matrix.matrix[message[0]][message[1]] = player.color
+//			this.broadcast("matrixChange", matrix.matrix)
+//			console.log(message)
+//			console.log(this.state.players.get(client.sessionId).connected)
+//		})
 		
 		//testNicoclickterritoire
 		
@@ -59,6 +59,7 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 //			console.log(message);
 			var territoire = new Territoire("0","0","0","0");
 			territoire = this.state.carte.get(message)
+			console.log(territoire)
 //			console.log(this.state.carte.get(message))
 //			console.log(territoire.nom)
 		if(state=="placementInitial" ){
