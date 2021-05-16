@@ -1,7 +1,81 @@
+@font-face{
+	font-family:"ArmyRust";
+	src: url('../fonts/ARMYRUST.ttf');
+}
+.fontArr
+{
+	font-family:"ArmyRust";
+	/*color:#DAA520;*/
+	font-size:32px;
+	color:#B8AFE3;
+}
+.fontArrh6{
+	font-family:"ArmyRust";
+	/*color:#DAA520;*/
+	font-size:24px;
+}
+
+@font-face{
+	font-family:"Gazelle";
+	src: url('../fonts/Gazelle.ttf');
+}
+.fontGzl
+{
+	font-family:"Gazelle";
+	/*color:#DAA520;*/
+	font-size:48px;
+	color:#AEA5D6;
+}
 .leaderboard
 {
-	border:3px solid #CECECE;
+	border-right:5px solid #292733;
+	border-bottom:5px solid #292733;
+	background:#3D3A4B;
+	
 }
+input[type=text]{
+	background:#B8AFE3;
+	border: 2px solid #4F4B61;
+  	border-radius: 4px;
+  	width:65%;
+}
+input[type=text]:focus{
+	border: 3px solid #292733 !important;
+}
+input[type=submit]{
+	background:#AEA5D6;
+	border: 2px solid #4F4B61;
+  	border-radius: 4px;
+  	width:35%;
+}
+input[type=submit]:hover{
+	background:#B8AFE3;
+	border: 2px solid #4F4B61;
+  	border-radius: 4px;
+  	color:#EDEDED;
+  	width:35%;
+}
+.chatBox{
+	width:100%;
+	height:300px;
+	background:#E4DEFF;
+	border:4px solid #292733;
+	border-radius:4px;
+	overflow: auto;
+}
+.messages
+{
+	width:100%;
+}
+.messages:nth-of-type(even)
+{
+	background:#C1B7ED;
+}
+.messages:nth-of-type(odd)
+{
+	background:#E4DEFF;
+}
+
 .toCenter
 {
 	border:1px solid red;
