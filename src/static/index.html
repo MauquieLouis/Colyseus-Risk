@@ -16,9 +16,39 @@
 				<div id="LeaderBoard" class="col-12 col-md-3 leaderboard">
 					<div id="toCenter">
 						<div id="UserConnected">
-							<h4>Joueurs Connectés : </h4>
-							<div id="userList">
-							
+							<h4 class="text-center fontArr">Joueurs Connectes : </h4>
+							<div class="row">
+								<div class="offset-md-1 col-md-10">
+									<ul id="userList">
+									
+									</ul>
+								</div>
+							</div>
+							<div class="row text-center">
+								<form id="GetStarted" class="GetStarted">
+									<input type="submit" value="Lancer la partie" />
+								</form>
+                        <!-- Romain fonction Abandonner -->
+						      <form id="Abandon" class="Abandon">
+							   <input type="submit" value="Abandonner la partie"/>
+						      </form>
+                        <!-- Romain fonction Abandonner -->
+							</div>
+						</div>
+						<div class="row">
+							<div style="margin-top:15px;"></div>
+							<div style="border-top:3px solid #292733; width:80%; margin-left:10%;margin-bottom:10px;"></div>
+							<h4 class="fontArr text-center">Infos Jeux :</h4>
+							<div class="offset-md-1 col-md-10">
+								<div id="joueurActifDisplay">
+								
+								</div>
+								<div id="stockList">
+								
+								</div>
+								<div id="attackInfo" style="color:white">
+								
+								</div>
 							</div>
 						</div>
 						<div class="nes-container is-dark with-title" id="color">
@@ -52,7 +82,6 @@
    viewBox="0 0 750 520">
    
    <text x=15 y=370 id=ShowContinents front-size=15>
-   <tspan x=15 dy=1.2em>Bonus Des Continents :</tspan>
    <tspan x=15 dy=1.2em class="NA">Amérique du Nord : +5</tspan>
    <tspan x=15 dy=1.2em class="SA">Amérique du Sud : +2</tspan>
    <tspan x=15 dy=1.2em class="EU">Europe : +5</tspan>

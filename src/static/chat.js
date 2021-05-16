@@ -117,10 +117,24 @@ var host = window.document.location.host.replace(/:.*/, '');
 			document.getElementById("joueurActifDisplay").style.color=message[2]
 			document.getElementById("joueurActifDisplay").innerHTML="Phase : " + message[0]+ "<br>" + message[1] + " est en train de jouer"
 		})
-		//disparition du bouton lancer la partie
+
+		//disparition du bouton lancer la partie, affichage du bouton Abandonner la partie
 		room.onMessage("GameHasStarted",function(){
 			document.getElementById("GetStarted").style.display = "none"
+//Romain fonction abandonner
+			document.getElementById("Abandon").style.display = "block"
+//Romain fonction abandonner
 		})
+
+//Romain fonction abandonner
+		room.onMessage("Abandon_Confirmer",function(){
+			var abandon="0"
+			if (window.confirm("Voulez-vous vraiment abandonner?")) {
+				abandon="1"
+			}
+			room.send("Abandon_Confirmation",[abandon])		
+		})
+//Romain fonction abandonner
 
 		room.onMessage("CombienDeplacer",function(message){
 			console.log("a"+message[2])
@@ -249,6 +263,15 @@ var host = window.document.location.host.replace(/:.*/, '');
 			e.preventDefault();
 			room.send("GetStarted")
 		}
+
+		//Romain fonction abandonner		
+		document.querySelector("#Abandon").onsubmit = function(e){
+			e.preventDefault();
+			room.send("Abandon")
+		}
+		//Romain fonction abandonner
+
+
 		
 		var territoires = document.getElementsByTagName("g")[1]
 		//console.log(territoires.children)

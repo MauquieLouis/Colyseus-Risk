@@ -5,12 +5,12 @@
 	stroke: black;
 	stroke-width: 1px;
 }
-/* caractéristiques des chiffres représentant les unités */
+/* caractï¿½ristiques des chiffres reprï¿½sentant les unitï¿½s */
 .map text{
 	fill: black;
 	font: bold 15px sans-serif;
 }
-/* caractéritiques du tableau ContinentInfo */
+/* caractï¿½ritiques du tableau ContinentInfo */
 .map tspan{
 	font: 12px sans-serif;
 }
@@ -35,3 +35,7 @@
 }
 
 
+/* Romain fonction Abandonner */
+.Abandon{
+	display: none;
+}

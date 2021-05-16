@@ -26,7 +26,7 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 			console.log("New author name defined :", message)
 			const player = this.state.players.get(client.sessionId);
 			player.nom = message;
-			player.color = changeColorFunction()
+//			player.color = changeColorFunction()
 			console.log(player.nom, 'est le nouveau pseudo de ', client.sessionId)
 			this.broadcast("listUserConnected", this.state.players)
 		});
@@ -364,6 +364,21 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 				this.broadcast("activePlayer",[state, this.state.players.get(IdActif).nom, this.state.players.get(IdActif).color])
 			}
 		})
+
+		//Romain fonction abandonner
+		this.onMessage("Abandon",(client)=>{
+			// Le client actif ne peut pas abandonner
+			if (IdActif == client.sessionId) {return}
+			client.send("Abandon_Confirmer",[""])
+		})
+
+		this.onMessage("Abandon_Confirmation",(client, message)=>{
+			if (message == "1") {
+				console.log(client.sessionId+" Abandon_Confirmation")
+			}
+		})
+		//Romain fonction abandonner	
+
 	}
 	
 	onJoin (client, options) {
@@ -399,8 +414,8 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 		Order.splice(Order.indexOf(client.sessionId),1)
 		console.log(Order)
 		if(IdActif == client.sessionId){PasserLaMain()}
+		this.broadcast("listUserConnected", this.state.players);
 		// 3 paramètre pour message : 1er : le message; 2eme : le pseudo, 3eme : la couleur
-		//this.broadcast("messages", [('('+client.sessionId+') : left the fucking session !'),player.nom,player.color]);
 		console.log("Hey a bitch leave the room");
 	}
 
@@ -433,14 +448,32 @@ function originalStock(nbPlayers){
 }
 
 
+var colors = ['00FF00','FF00FF','FF0000','FFFF00','0000FF','00FFFF','787878','FFFFFF']
+
+var newColors= [];
 //Generation couleur aléatoire
 function changeColorFunction(){
-	var letters = '0123456789ABCDEF';
-	var color = '#';
-	for (var i = 0; i < 6; i++) {
-		color += letters[Math.floor(Math.random() * 16)];
-	}
+	color = '#'+colors[0]
+	colors.shift();
+//	var color = '#';
+//	var randomNum = Math.floor(Math.random()*colors.length);
+//	color += colors[randomNum]
+//	console.log('randomNum : '+randomNum)
+//	for(var i = 0; i<colors.length; i++)
+//	{
+//		if(i != randomNum)
+//		{
+//			newColors[i] = colors[i];
+//		}
+//	}
+//	console.log('newColor : '+newColors)
+//	colors = newColors;
+//	var letters = '0123456789ABCDEF';
+//	for (var i = 0; i < 6; i++) {
+//		color += letters[Math.floor(Math.random() * 16)];
+//	}
 	console.log(color)
+	console.log(colors)
 	return color;
 }
 
