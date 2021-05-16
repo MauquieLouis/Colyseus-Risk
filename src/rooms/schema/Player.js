@@ -8,12 +8,14 @@ class Player extends Schema{
 		this.nom = "JeanMi";
 		this.color = "red";
 		this.stock = 0;
+		this.alive = true;
 	}
 }
 schema.defineTypes(Player, {
 	nom: "string",
 	color: "string",
-	stock: "number"
+	stock: "number",
+	alive: "boolean"
 });
 
 exports.Player = Player

@@ -5,10 +5,14 @@
 	stroke: black;
 	stroke-width: 1px;
 }
-/* c'est les caract�ristiques des chiffres */
+/* caract�ristiques des chiffres repr�sentant les unit�s */
 .map text{
 	fill: black;
 	font: bold 15px sans-serif;
+}
+/* caract�ritiques du tableau ContinentInfo */
+.map tspan{
+	font: 12px sans-serif;
 }
 
 .Oceanie{
@@ -30,10 +34,6 @@
 	fill:brown;
 }
 
-/* ne marche pas */
-.GetStarted:click{
-	display: none;
-}
 
 /* Romain fonction Abandonner */
 .Abandon{
