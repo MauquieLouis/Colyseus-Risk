@@ -1,5 +1,5 @@
 var host = window.document.location.host.replace(/:.*/, '');
-	  var autoScroll = 0;
+
       var client = new Colyseus.Client(location.protocol.replace("http", "ws") + "//" + host + (location.port ? ':'+location.port : ''));
       client.joinOrCreate("chat").then(room => {
         console.log("joined the room");
@@ -15,12 +15,10 @@ var host = window.document.location.host.replace(/:.*/, '');
         room.onMessage("messages", function(message) {
 			chatBox = document.getElementById('chatBox')
 			console.log(message)
-			chatBox.innerHTML += ('<div style="color:'+message[2]+';" class="messages"><strong>'+message[1]+' : </strong><span style="color:black;">'+message[0]+'</span></div>')
+			chatBox.innerHTML += ('<span style="color:'+message[2]+';">'+message[1]+' : '+message[0]+'</span></br>')
 //            var p = document.createElement("p");
 //            p.innerText = message;
 //            document.querySelector("#chatBox").appendChild(p);
-			autoScroll+=100
-			document.getElementById('chatBox').scroll(0,autoScroll);
         });
 		
 		room.onMessage("CarteInit", function(message){
@@ -55,9 +53,12 @@ var host = window.document.location.host.replace(/:.*/, '');
 			stockList.innerHTML = ''
 			for(const[key, value] of Object.entries(message[0]))
 			{
-				stockList.innerHTML += ('<span style="color:'+value.color+'"><strong>'+value.nom+'</strong> a <strong>'+value.stock+'</strong> pions à placer'+'</span></br>')
+				stockList.innerHTML += ('<span style="color:'+value.color+'">'+value.nom+' a '+value.stock+' pions à placer'+'</span></br>')
 			}
 		})
+		
+
+		
 		
 		// Initialisation de la matrice : afficahge côté client
 //		room.onMessage("matrixInit", function(message) {
@@ -103,7 +104,7 @@ var host = window.document.location.host.replace(/:.*/, '');
 			for(const[key, value] of Object.entries(message))
 			{
 				console.log(key+" : "+value.nom+" : "+value.color)
-				listUser.innerHTML += ('<li style="color:'+value.color+'"><span id="'+key+'" ><strong>'+value.nom+'</strong> ('+key+')'+'</span></li>')
+				listUser.innerHTML += ('<span id="'+key+'" style="color:'+value.color+'">'+key+' ('+value.nom+')'+'</span></br>')
 			}
 //			message.forEach(function(){console.log(value, key)})
 			
@@ -114,7 +115,7 @@ var host = window.document.location.host.replace(/:.*/, '');
 		//Display ActivePlayer
 		room.onMessage("activePlayer", function(message){
 			document.getElementById("joueurActifDisplay").style.color=message[2]
-			document.getElementById("joueurActifDisplay").innerHTML="<h6 class='fontArrh6' style='display:inline'>Phase</h6> : " + message[0]+ "<br>" + message[1] + " est en train de jouer"
+			document.getElementById("joueurActifDisplay").innerHTML="Phase : " + message[0]+ "<br>" + message[1] + " est en train de jouer"
 		})
 
 		//disparition du bouton lancer la partie, affichage du bouton Abandonner la partie
@@ -292,6 +293,45 @@ var host = window.document.location.host.replace(/:.*/, '');
 	//	console.log(color)
 		return color;
 	}
+	
+//gestion du ShowContinent	
+var color = []
+var InfoContinents=document.getElementById("ShowContinents")
+InfoContinents.addEventListener("mouseover",function(){
+	var NA = document.getElementsByClassName("NA")
+	for (let territoire of NA) {
+	color.push(territoire.style.fill)
+	territoire.style.fill="yellow"}
+	var SA = document.getElementsByClassName("SA")
+	for (let territoire of SA) {
+	color.push(territoire.style.fill)
+	territoire.style.fill="red"}
+	var EU = document.getElementsByClassName("EU")
+	for (let territoire of EU) {
+	color.push(territoire.style.fill)
+	territoire.style.fill="blue"}	
+	var Afrique = document.getElementsByClassName("Afrique")
+	for (let territoire of Afrique) {
+	color.push(territoire.style.fill)
+	territoire.style.fill="brown"}
+	var Asie = document.getElementsByClassName("Asie")
+	for (let territoire of Asie) {
+	color.push(territoire.style.fill)
+	territoire.style.fill="green"}
+	var Oceanie = document.getElementsByClassName("Oceanie")
+	for (let territoire of Oceanie) {
+	color.push(territoire.style.fill)
+	territoire.style.fill="violet"}	
+})
+InfoContinents.addEventListener("mouseout",function(){
+	var ContinentList = ["NA","SA","EU","Afrique","Asie","Oceanie"]
+	for(var i=0; i<ContinentList.length; i++){
+		var Continent = document.getElementsByClassName(ContinentList[i])
+		for (let territoire of Continent) {
+		territoire.style.fill=color.shift()}
+	}		
+})
+
 //function coord(event){
 //
 ////var e = event || window.event;
