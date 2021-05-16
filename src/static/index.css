@@ -5,7 +5,7 @@
 	stroke: black;
 	stroke-width: 1px;
 }
-/* c'est les caractéristiques des chiffres */
+/* c'est les caractï¿½ristiques des chiffres */
 .map text{
 	fill: black;
 	font: bold 15px sans-serif;
@@ -35,3 +35,7 @@
 	display: none;
 }
 
+/* Romain fonction Abandonner */
+.Abandon{
+	display: none;
+}

@@ -362,6 +362,21 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 				this.broadcast("activePlayer",[state, this.state.players.get(IdActif).nom, this.state.players.get(IdActif).color])
 			}
 		})
+
+		//Romain fonction abandonner
+		this.onMessage("Abandon",(client)=>{
+			// Le client actif ne peut pas abandonner
+			if (IdActif == client.sessionId) {return}
+			client.send("Abandon_Confirmer",[""])
+		})
+
+		this.onMessage("Abandon_Confirmation",(client, message)=>{
+			if (message == "1") {
+				console.log(client.sessionId+" Abandon_Confirmation")
+			}
+		})
+		//Romain fonction abandonner	
+
 	}
 	
 
@@ -427,7 +442,8 @@ function originalStock(nbPlayers){
 }
 
 
-var colors = ['35E520', '18ECD5','EC18E8','DC1717','AB16E8','3D63F1']
+var colors = ['00FF00','FF00FF','FF0000','FFFF00','0000FF','00FFFF','787878','FFFFFF']
+
 var newColors= [];
 //Generation couleur aléatoire
 function changeColorFunction(){
