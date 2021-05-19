@@ -6,6 +6,8 @@ const MyRoomState = require('./schema/MyRoomState').MyRoomState;
 const Player = require('./schema/Player').Player
 const Territoire = require('./schema/Territoire').Territoire
 //const Matrix = require('./schema/Matrix').Matrix;
+var GameStarted = false
+var state = "placementInitial"
 
 exports.MyRoom = class MyRoom extends colyseus.Room {
 
@@ -21,6 +23,7 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 		// - - - - - - - - - - - - - - - - - - - - - - - - -//
 		//Message Console quand quelqu'un rejoins le serveur
 		console.log("SomeOne VerY SpeCiaL join the room")
+		console.log(this)
 		this.onMessage("author", (client, message) => {
 			console.log("New author name defined :", message)
 			const player = this.state.players.get(client.sessionId);
@@ -49,7 +52,6 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 		
 		//testNicoclickterritoire
 		
-		var player
 		var deplacementencours = false
 		var deplacementdepuis = 0
 
@@ -58,7 +60,7 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 
 		this.onMessage("territoireClicked",(client, message)=>{
 			const player = this.state.players.get(client.sessionId);
-			console.log("Territoire clicked",state)
+			console.log("Territoire clicked",state, IdActif)
 //			console.log(client.sessionId)
 //			console.log(message);
 			var territoire = new Territoire("0","0","0","0");
@@ -203,16 +205,45 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 			}
 			else {
 				state="deplacement"
+// Bug deplacement Territoire Isole
+				if (! Deplacement_joueurpossedeterritoirenonisole(IdActif,this.state.carte)) {
+					console.log("Changment Main Deplacement Renfort")
+					PasserLaMain()
+					state="renforts"
+					this.state.players.get(IdActif).stock=calculRenforts(IdActif,this.state.carte)
+					this.broadcast("carteChange", [this.state.players,this.state.carte])
+					this.broadcast("activePlayer",[state, this.state.players.get(IdActif).nom, this.state.players.get(IdActif).color])
+				}
+				else {
+					client.send("Deplacement_possible",[""])
+				}
+// Bug deplacement Territoire Isole
 			}
 			this.broadcast("activePlayer",[state, this.state.players.get(IdActif).nom, this.state.players.get(IdActif).color])
 		})
-		
+
+// Bug deplacement Territoire Isole
+		this.onMessage("Deplacement_Confirmation",(client, message)=>{ 
+			if (message[0] == false){
+				PasserLaMain()
+				state="renforts"
+				this.state.players.get(IdActif).stock=calculRenforts(IdActif,this.state.carte)
+				this.broadcast("carteChange", [this.state.players,this.state.carte])
+				this.broadcast("activePlayer",[state, this.state.players.get(IdActif).nom, this.state.players.get(IdActif).color])
+			}
+		})
+// Bug deplacement Territoire Isole
+
 		this.onMessage("Attaque_CombatTermine",(client, message)=>{
 			console.log("Attaque_CombatTermine"+message)
 			var attaquantPaysNom=message[0]
-			var attaquantArmees=message[1]
+// Bug deplacement Territoire Isole
+			var attaquantArmees=parseInt(message[1],10)
+// Bug deplacement Territoire Isole
 			var defenseurPaysNom=message[2]
-			var defenseurArmees=message[3]
+// Bug deplacement Territoire Isole
+			var defenseurArmees=parseInt(message[3],10)
+// Bug deplacement Territoire Isole			
 			var transfert=message[4]
 			if (defenseurArmees == 0) {
 				var attaquantPays=this.state.carte.get(attaquantPaysNom)
@@ -237,54 +268,23 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 				console.log("le state a été mis en deplacement")
 				attaqueencours=false
 			}
+// Bug deplacement Territoire Isole
+			if (state=="deplacement") {
+				if (! Deplacement_joueurpossedeterritoirenonisole(IdActif,this.state.carte)) {
+					console.log("Changment Main Deplacement Renfort 2")
+					PasserLaMain()
+					state="renforts"
+					this.state.players.get(IdActif).stock=calculRenforts(IdActif,this.state.carte)
+				}
+				else {
+					client.send("Deplacement_possible",[""])
+				}
+			}
+// Bug deplacement Territoire Isole
 			this.broadcast("carteChange", [this.state.players,this.state.carte])
 			this.broadcast("activePlayer",[state, this.state.players.get(IdActif).nom, this.state.players.get(IdActif).color])
 		})
-		
-//	calcul des renforts
-	function calculRenforts(Id,carte){
-		var nbTerritoires = 0
-		var NA = 0
-		var SA = 0
-		var EU = 0
-		var Oceanie = 0
-		var Asie = 0
-		var Afrique = 0
-		carte.forEach((territoire)=>{
-			if(territoire.proprietaire==Id){
-				nbTerritoires++
-				if(territoire.continent=="NA"){NA++}
-				if(territoire.continent=="SA"){SA++}
-				if(territoire.continent=="EU"){EU++}
-				if(territoire.continent=="Oceanie"){Oceanie++}
-				if(territoire.continent=="Afrique"){Afrique++}
-				if(territoire.continent=="Asie"){Asie++}			
-				}
-			})
-		var total = Math.floor(nbTerritoires/3)
-		console.log("14?",total, nbTerritoires)
-		if(NA==9){total+=5}
-		if(SA==4){total+=2}
-		if(EU==7){total+=5}
-		if(Oceanie==4){total+=2}
-		if(Asie==12){total+=7}
-		if(Afrique==6){total+=3}
-		console.log(total)
-		if(total>3){return total}
-		else{return 3}
-	} 
-
-//	calcul des renforts
-	function totalDeplacementsPossibles(Id,carte){
-		var nbTerritoires=0
-		var nbTerritoiresArmee=0
-		carte.forEach((territoire)=>{
-			if (territoire.proprietaire==Id){nbTerritoires++}
-			if (territoire.army > 1) {nbTerritoiresArmee++}
-		})
-		if (nbTerritoiresArmee>1 && nbTerritoires>1){return true}
-		return false
-	}
+					 
 		
 		//Implementer la fonction qui rempli la map carte en fonction du tableau javascript renvoyé !=
 		this.onMessage("carte",(client, message)=>{
@@ -325,8 +325,8 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 		
 		//LANCEMENT DE LA PARTIE !!! :D (la joie et le bonne humeur se répandent grâce à nous <3)
 		var nbplayersstarted = 0
-		var state = "placementInitial"
 		this.onMessage("GetStarted",(client)=>{
+			GameStarted = true
 			this.broadcast("GameHasStarted")
 			Order.forEach((Id) => {
 //				console.log("GetStarted "+client.sessionId)
@@ -365,22 +365,38 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 
 		//Romain fonction abandonner
 		this.onMessage("Abandon",(client)=>{
-			// Le client actif ne peut pas abandonner
-			if (IdActif == client.sessionId) {return}
 			client.send("Abandon_Confirmer",[""])
 		})
 
 		this.onMessage("Abandon_Confirmation",(client, message)=>{
 			if (message == "1") {
 				console.log(client.sessionId+" Abandon_Confirmation")
+				const player = this.state.players.get(client.sessionId)
+				this.broadcast("messages", [('('+client.sessionId+") : vient d'abandonner, quel nul !"),player.nom,player.color]);
+				Order.splice(Order.indexOf(client.sessionId),1)
+				console.log(IdActif, client.sessionId)
+				if(IdActif==client.sessionId){
+					PasserLaMain()
+					if(state != "placementInitial"){
+						state = "renforts"
+						this.state.players.get(IdActif).stock=calculRenforts(IdActif,this.state.carte)
+						}
+					this.broadcast("carteChange", [this.state.players,this.state.carte])
+				}
+				if(Order.length==1){ //ceci ne s'active que si il n'y a plus qu'un joueur
+					var gagnant = this.state.players.get(IdActif)
+					this.broadcast("messages", [('('+IdActif+') : vient de conquérir le monde, quel boss !'),gagnant.nom,gagnant.color]);
+					this.broadcast("VICTOIRE", gagnant.color)
+					}
 			}
 		})
 		//Romain fonction abandonner	
 
-	}
-	
+	}	
 
 	onJoin (client, options) {
+		if(GameStarted == true){throw new Error("Partie Complète")}
+		else{
 		this.state.players.set(client.sessionId, new Player());
 		const matrix = this.state.matrix
 		if(this.state.carteInit==false)
@@ -401,12 +417,27 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 		console.log(client.sessionId+" joined")
 		Order.push(client.sessionId)
 		this.broadcast("messages", [('('+client.sessionId+') : vient d\'arriver !'),player.nom,player.color]);
+		}
 	}
 
 	onLeave (client, consented) {
 		const player = this.state.players.get(client.sessionId)
 		this.broadcast("messages", [('('+client.sessionId+') : vient malheureusement de partir !'),player.nom,player.color]);
-		this.state.players.delete(client.sessionId)
+		Order.splice(Order.indexOf(client.sessionId),1)
+		console.log(IdActif, client.sessionId)
+		if(IdActif==client.sessionId){
+				PasserLaMain()
+				if(state != "placementInitial"){
+					state = "renforts"
+					this.state.players.get(IdActif).stock=calculRenforts(IdActif,this.state.carte)
+					}
+				this.broadcast("carteChange", [this.state.players,this.state.carte])
+			}
+		if(Order.length==1){ //ceci ne s'active que si il n'y a plus qu'un joueur
+			var gagnant = this.state.players.get(Idactif)
+			this.broadcast("messages", [('('+IdActif+') : vient de conquérir le monde, quel boss !'),gagnant.nom,gagnant.color]);
+			this.broadcast("VICTOIRE", gagnant.color)
+			}
 		//On actualise la liste des joueurs lorsqu'un joueur se déconnecte
 		this.broadcast("listUserConnected", this.state.players);
 		// 3 paramètre pour message : 1er : le message; 2eme : le pseudo, 3eme : la couleur
@@ -417,7 +448,8 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 		console.log("Dispose ChatRoom");
 	}
 
-}
+} //fin de la classe
+
 //Gestion de l'ordre des joueurs
 var Order = []
 var IdActif = "none"
@@ -438,7 +470,7 @@ function PasserLaMain(){
 
 //Gestion du stock de départ
 function originalStock(nbPlayers){
-	return 32-5*nbPlayers
+	return 50-5*nbPlayers
 }
 
 
@@ -479,7 +511,7 @@ function getVoisins(name){
 	if(name=="indonesia"){return ["western_australia","new_guinea","siam"]}
 	if(name=="siam"){return ["indonesia","india","china"]}
 	if(name=="india"){return ["siam","china","afghanistan","middle_east"]}
-	if(name=="middle_east"){return ["russia","east_africa","egypt","afghanistan","india"]}
+	if(name=="middle_east"){return ["russia","east_africa","egypt","afghanistan","india","southern_europe"]}
 	if(name=="afghanistan"){return ["middle_east","india","china","russia","ural"]}
 	if(name=="china"){return ["afghanistan","siam","india","ural","siberia","mongolia"]}
 	if(name=="mongolia"){return ["china","siberia","japan","kamchatka","irkutsk"]}
@@ -511,7 +543,7 @@ function getVoisins(name){
 	if(name=="argentina"){return ["peru","brazil"]}
 	if(name=="north_africa"){return ["brazil","western_europe","southern_europe","egypt","east_africa","congo"]}
 	if(name=="egypt"){return ["southern_europe","middle_east","north_africa","east_africa"]}
-	if(name=="east_africa"){return ["egypt","middle_east","north_africa","congo","madagascar"]}
+	if(name=="east_africa"){return ["egypt","middle_east","north_africa","congo","madagascar","south_africa"]}
 	if(name=="madagascar"){return ["south_africa","east_africa"]}
 	if(name=="south_africa"){return ["madagascar","congo","east_africa"]}
 	if(name=="congo"){return ["south_africa","north_africa","east_africa"]}
@@ -634,7 +666,57 @@ function Combat_attaquePossible (Territoire1,Territoire2) {
     }
 }
 
+// Bug deplacement Territoire Isole
+// Savoir si un deplacement est possible
+function Deplacement_joueurpossedeterritoirenonisole(Id,carte) {
+	var possedeterritoirenonisole = false
+    carte.forEach((territoire)=>{
+        if(territoire.proprietaire==Id){
+			console.log("Territoire: "+ territoire.nom+" appartient à: " + Id)
+            var status = Deplacement_voisinLimitrophe(territoire)
+            if (status){
+				console.log("Deplacement_joueurpossedeterritoirenonisole : true" + Id)
+                possedeterritoirenonisole = true
+            }
+        }
+    })
+	console.log("Deplacement_joueurpossedeterritoirenonisole : " + possedeterritoirenonisole)
+	return(possedeterritoirenonisole)
+}
+// Bug deplacement Territoire Isole
 
+//	calcul des renforts
+	 function calculRenforts(Id,carte){
+		var nbTerritoires = 0
+		var NA = 0
+		var SA = 0
+		var EU = 0
+		var Oceanie = 0
+		var Asie = 0
+		var Afrique = 0
+		carte.forEach((territoire)=>{
+			if(territoire.proprietaire==Id){
+				nbTerritoires++
+				if(territoire.continent=="NA"){NA++}
+				if(territoire.continent=="SA"){SA++}
+				if(territoire.continent=="EU"){EU++}
+				if(territoire.continent=="Oceanie"){Oceanie++}
+				if(territoire.continent=="Afrique"){Afrique++}
+				if(territoire.continent=="Asie"){Asie++}			
+				}
+			})
+		var total = Math.floor(nbTerritoires/3)
+//		console.log("14?",total, nbTerritoires)
+		if(NA==9){total+=5}
+		if(SA==4){total+=2}
+		if(EU==7){total+=5}
+		if(Oceanie==4){total+=2}
+		if(Asie==12){total+=7}
+		if(Afrique==6){total+=3}
+		console.log(total)
+		if(total>3){return total}
+		else{return 3}
+	}
 
 
 

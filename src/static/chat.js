@@ -233,7 +233,22 @@ var host = window.document.location.host.replace(/:.*/, '');
 			}
 			
 		})
-				
+		
+		// Bug
+		room.onMessage("Deplacement_possible",function(message){ 
+			var dep = window.confirm("Voulez-vous effectuer un déplacement?")
+			room.send("Deplacement_Confirmation",[dep])
+		})
+		// Bug
+		
+		//Victoire
+		room.onMessage("VICTOIRE",function(message){
+			var territoires = document.getElementsByTagName("g")[1]
+			for(var i = 0; i<territoires.children.length; i++){
+				territoires.children[i].style.fill=message
+				//c'est ici que tu peux mettre la musique Louis <3
+				}
+			})					
 
         // send message to room on submit
         document.querySelector("#form").onsubmit = function(e) {
@@ -304,6 +319,43 @@ var host = window.document.location.host.replace(/:.*/, '');
 ////	console.log(coord)
 ////})
 
+//gestion du ShowContinent	
+var color = []
+var InfoContinents=document.getElementById("ShowContinents")
+InfoContinents.addEventListener("mouseover",function(){
+	var NA = document.getElementsByClassName("NA")
+	for (let territoire of NA) {
+	color.push(territoire.style.fill)
+	territoire.style.fill="yellow"}
+	var SA = document.getElementsByClassName("SA")
+	for (let territoire of SA) {
+	color.push(territoire.style.fill)
+	territoire.style.fill="red"}
+	var EU = document.getElementsByClassName("EU")
+	for (let territoire of EU) {
+	color.push(territoire.style.fill)
+	territoire.style.fill="blue"}	
+	var Afrique = document.getElementsByClassName("Afrique")
+	for (let territoire of Afrique) {
+	color.push(territoire.style.fill)
+	territoire.style.fill="brown"}
+	var Asie = document.getElementsByClassName("Asie")
+	for (let territoire of Asie) {
+	color.push(territoire.style.fill)
+	territoire.style.fill="green"}
+	var Oceanie = document.getElementsByClassName("Oceanie")
+	for (let territoire of Oceanie) {
+	color.push(territoire.style.fill)
+	territoire.style.fill="violet"}	
+})
+InfoContinents.addEventListener("mouseout",function(){
+	var ContinentList = ["NA","SA","EU","Afrique","Asie","Oceanie"]
+	for(var i=0; i<ContinentList.length; i++){
+		var Continent = document.getElementsByClassName(ContinentList[i])
+		for (let territoire of Continent) {
+		territoire.style.fill=color.shift()}
+	}		
+})
 
 //tableau trié ordre croissant des num lancés de dés
 	function Combat_lanceDe (num) {
