@@ -1,30 +1,32 @@
 var host = window.document.location.host.replace(/:.*/, '');
 	  var autoScroll = 0;
       var client = new Colyseus.Client(location.protocol.replace("http", "ws") + "//" + host + (location.port ? ':'+location.port : ''));
+
+
       client.joinOrCreate("chat").then(room => {
-        console.log("joined the room");
-		console.log(client)
         room.onStateChange.once(function(state) {
-            console.log("initial room state:", state);
         });
+
         // new room state
         room.onStateChange(function(state) {
             // this signal is triggered on each patch
         });
-        // listen to patches coming from the server
+
+
+//========================= MESSAGES QUE LE CLIENT ATTENDS DU SERVEUR =========================//
+
+		//Affichage mes messages dans la chatbox
         room.onMessage("messages", function(message) {
 			chatBox = document.getElementById('chatBox')
-			console.log(message)
 			chatBox.innerHTML += ('<div style="color:'+message[2]+';" class="messages"><strong>'+message[1]+' : </strong><span style="color:black;">'+message[0]+'</span></div>')
-//            var p = document.createElement("p");
-//            p.innerText = message;
-//            document.querySelector("#chatBox").appendChild(p);
 			autoScroll+=100
 			document.getElementById('chatBox').scroll(0,autoScroll);
         });
-		
+
+
+
+		//Envoie au serveur la liste des territoires en les lisant dans le code svg de la carte
 		room.onMessage("CarteInit", function(message){
-			console.log(message)
 			var territoires = document.getElementsByTagName("g")[1]
 			for(var i = 0; i<territoires.children.length; i++){
 				message[i] = 
@@ -33,21 +35,18 @@ var host = window.document.location.host.replace(/:.*/, '');
 				 	"continent":territoires.children[i].className['animVal'],
 			 		"proprietaire":"none",
 				}
-				console.log(territoires[i])
 			}
 			room.send("carte",message)
 		});
 		
+		
+		//Met à jour la carte
 		room.onMessage("carteChange",function(message){
-//			console.log(message[0])
-//			console.log(message[1])
 			for (const[key, value] of Object.entries(message[1])){
-//				console.log(key+" : "+value.nom)
 				var territoire = document.getElementById(key)
 				var army = document.getElementById(key+"Army")
 				if(army != null){army.innerHTML=value.army}
 				if(value.proprietaire != "none"){
-//					console.log(message[0][value.proprietaire].color)
 					territoire.style.fill = message[0][value.proprietaire].color
 				}
 			}
@@ -59,73 +58,30 @@ var host = window.document.location.host.replace(/:.*/, '');
 			}
 		})
 		
-		// Initialisation de la matrice : afficahge côté client
-//		room.onMessage("matrixInit", function(message) {
-//			matrixZone = document.getElementById('matrix')
-//			matrixZone.innerHTML = '';
-//			for(var i=0; i<message.length; i++){
-//				for(var j=0; j<message.length; j++){
-//					var div = document.createElement('div')
-//					div.id = i+'.'+j
-//					div.style = "display:inline-block; height:40px; width:40px; border:1px solid black;"
-//					matrixZone.appendChild(div)
-//					//matrixZone.innerHTML+=("<div id='"+i+"."+j+"'style='display:inline-block; height:40px; width:40px; border:1px solid black;'></div>")
-////					console.log(document.getElementById("0.0").addEventListener("click",function(){console.log("Hey")}))			
-//				}
-//				matrixZone.innerHTML+=("</br>")
-//			}
-//			setTimeout(function(){
-//				for(var i=0; i<message.length; i++){
-//					for(var j=0; j<message.length; j++){
-//						document.getElementById(i+'.'+j).addEventListener("click",function(){
-//						coord = this.id.split(".")
-//						room.send("caseClicked", coord)
-//						})			
-//					}
-//				}
-//			},20)
-//        });
-//		room.onMessage("matrixChange", function(message){
-////			console.log('matrixChange')
-////			console.log(message)
-//			for(var i=0; i<message.length; i++){
-//				for(var j=0; j<message.length; j++){
-//					if(message[i][j] != document.getElementById(i+'.'+j).value){
-//						document.getElementById(i+'.'+j).style.backgroundColor = message[i][j]
-//					}
-//				}
-//			}
-//		})
 		
+		//Met à jour la liste des utilisateurs
 		room.onMessage("listUserConnected", function(message){
 			listUser = document.getElementById('userList')
 			listUser.innerHTML = ''
 			for(const[key, value] of Object.entries(message))
 			{
-				console.log(key+" : "+value.nom+" : "+value.color)
 				listUser.innerHTML += ('<li style="color:'+value.color+'"><span id="'+key+'" ><strong>'+value.nom+'</strong> ('+key+')'+'</span></li>')
 			}
-//			message.forEach(function(){console.log(value, key)})
-			
-//			for(var i=0; i< message.length; i++){
-//				console.log(message[i])
-//			}
 		})
-		//Display ActivePlayer
 		room.onMessage("activePlayer", function(message){
 			document.getElementById("joueurActifDisplay").style.color=message[2]
 			document.getElementById("joueurActifDisplay").innerHTML="<h6 class='fontArrh6' style='display:inline'>Phase</h6> : " + message[0]+ "<br>" + message[1] + " est en train de jouer"
 		})
 
+
+
 		//disparition du bouton lancer la partie, affichage du bouton Abandonner la partie
 		room.onMessage("GameHasStarted",function(){
 			document.getElementById("GetStarted").style.display = "none"
-//Romain fonction abandonner
 			document.getElementById("Abandon").style.display = "block"
-//Romain fonction abandonner
 		})
 
-//Romain fonction abandonner
+		//Demande de confirmation pour capituler
 		room.onMessage("Abandon_Confirmer",function(){
 			var abandon="0"
 			if (window.confirm("Voulez-vous vraiment abandonner?")) {
@@ -133,10 +89,11 @@ var host = window.document.location.host.replace(/:.*/, '');
 			}
 			room.send("Abandon_Confirmation",[abandon])		
 		})
-//Romain fonction abandonner
 
+
+
+		//Envoi au serveur le nombre de pions que le joueru veut déplacer 
 		room.onMessage("CombienDeplacer",function(message){
-			console.log("a"+message[2])
 			if(message[2] == false){
 				alert("Vous ne pouvez pas effectuer ce déplacement")
 				room.send("Nbdeplacements","impossible")
@@ -146,14 +103,13 @@ var host = window.document.location.host.replace(/:.*/, '');
 			while(isNaN(deplacemement) || deplacemement < 0 || deplacemement > message[3] ){
 					deplacemement = parseInt(prompt("Erreur!! Choisissez un nombre d'armées à déplacer entre 0 et "+message[3]))
 			}
-			console.log("message envoyé "+ deplacemement)
 			room.send("Nbdeplacements",[message[0],message[1],deplacemement])
 			}
 		})
 
-// Attaques
+
+		//Confirmation de l'attaque
 		room.onMessage("Attaque_Confirmer",function(message){
-			console.log("Attaque_Confirmer"+message[0])
 			stockList = document.getElementById('stockList')
 			stockList.innerHTML = ''
 			if (window.confirm("Voulez-vous effectuer une attaque?")) {
@@ -172,9 +128,11 @@ var host = window.document.location.host.replace(/:.*/, '');
 
 			room.send("Attaque_Confirmation",[attaque])
 		})
-		
+
+
+
+		//Affichage des territoires impliqués dans le combat		
 		room.onMessage("Attaque_Rafraichir",function(message){
-			console.log("Attaque_Rafraichir"+message[0])
 			stockList = document.getElementById('stockList')
 			stockList.innerHTML = ''
 			attackInfo = document.getElementById('attackInfo')
@@ -186,9 +144,10 @@ var host = window.document.location.host.replace(/:.*/, '');
 				attackInfo.innerHTML += "<p>Def:" + message[2] + "(" + message [3] + ")</p>"
 			}
 		})
-		
+
+
+		//Effectue le combat et gère le transfert des troupes si l'attaquant gagne	
 		room.onMessage("Attaque_Combat",function(message){
-			console.log("Attaque_Combat"+message[0])
 			stockList = document.getElementById('stockList')
 			stockList.innerHTML = ''
 			attackInfo = document.getElementById('attackInfo')
@@ -206,14 +165,14 @@ var host = window.document.location.host.replace(/:.*/, '');
 			room.send("Attaque_CombatTermine",[resultat[0],resultat[1],resultat[2],resultat[3],transfert])
 		})
 		
+		//Demande au joueur si il veut réattaquer si il a gagné et gère le nouveau combat si oui
 		room.onMessage("Reattaque_Combat",function(message){
-			console.log("Reattaque_Combat"+message[0])
 			stockList = document.getElementById('stockList')
 			stockList.innerHTML = ''
 			attackInfo = document.getElementById('attackInfo')
 			attackInfo.innerHTML = ''
 			msg="Att: "+ message[0] + "(" + message[1] + ") contre Def: " + message[2] + "(" + message[3] + ")\n"
-			msg += "Confirmez-vous l'attaque?"
+			msg += "Confirmez-vous l'attaque de ce territoire ? Vous pouvez également arrêter d'attaquer pour ce tour"
 			confirmationCombat=window.confirm(msg)
 			if (confirmationCombat == true) {
 				resultat=Combat(message[0],message[1],message[2],message[3])
@@ -234,14 +193,14 @@ var host = window.document.location.host.replace(/:.*/, '');
 			
 		})
 		
-		// Bug
+		//Demande au joueur si il souhaite se déplacer
 		room.onMessage("Deplacement_possible",function(message){ 
 			var dep = window.confirm("Voulez-vous effectuer un déplacement?")
 			room.send("Deplacement_Confirmation",[dep])
 		})
-		// Bug
+
 		
-		//Victoire
+		//Animation de victoire
 		room.onMessage("VICTOIRE",function(message){
 			var territoires = document.getElementsByTagName("g")[1]
 			for(var i = 0; i<territoires.children.length; i++){
@@ -250,76 +209,52 @@ var host = window.document.location.host.replace(/:.*/, '');
 				}
 			})					
 
-        // send message to room on submit
+//=============================================================================================//
+
+//================================== EVENTLISTENERS ===========================================//
+
+        //Bouton "send" du chat
         document.querySelector("#form").onsubmit = function(e) {
             e.preventDefault();
-
             var input = document.querySelector("#input");
-
-//            console.log("input:", input.value);
-
-            // send data to room
             room.send("message", input.value);
-
-            // clear input
             input.value = "";
         }
 		
+		
+		//Bouton pour changer de pseudo
 		document.querySelector("#formUsername").onsubmit = function(e){
 			e.preventDefault();
 			var inputUsername = document.querySelector("#inputUsername");
-//			console.log("inputUsername: ",inputUsername.value)
 			room.send("author",inputUsername.value)
 		}
 		
-//GetStarted		
+		
+		//Bouton "lancer la partie"		
 		document.querySelector("#GetStarted").onsubmit = function(e){
 			e.preventDefault();
 			room.send("GetStarted")
 		}
 
-		//Romain fonction abandonner		
+
+		//Bouton capituler	
 		document.querySelector("#Abandon").onsubmit = function(e){
 			e.preventDefault();
 			room.send("Abandon")
 		}
-		//Romain fonction abandonner
-
 
 		
+		//Ecoute les clicks sur tous les territoires
 		var territoires = document.getElementsByTagName("g")[1]
-		//console.log(territoires.children)
 		for(var i = 0; i<territoires.children.length; i++){
-	document.getElementById(territoires.children[i].id).addEventListener("click",function(){
-	console.log(this.id);
-	var message = this.id
-	room.send("territoireClicked",message)
-	})
-}
+		document.getElementById(territoires.children[i].id).addEventListener("click",function(){
+		var message = this.id
+		room.send("territoireClicked",message)
+		})
+		}
     });
 
-	function changeColorFunction(){
-		var letters = '0123456789ABCDEF';
-		var color = '#';
-		for (var i = 0; i < 6; i++) {
-			color += letters[Math.floor(Math.random() * 16)];
-		}
-	//	console.log(color)
-		return color;
-	}
-//function coord(event){
-//
-////var e = event || window.event;
-////console.log(e.layerX,e.layerY)
-////}
-////var map = document.getElementById('map')
-////map.addEventListener("click", function(){
-////	var coord = elementPosition(map);
-////	console.log(map)
-////	console.log(coord)
-////})
-
-//gestion du ShowContinent	
+//Effet de survol qui affiche les continents 	
 var color = []
 var InfoContinents=document.getElementById("ShowContinents")
 InfoContinents.addEventListener("mouseover",function(){
@@ -356,6 +291,10 @@ InfoContinents.addEventListener("mouseout",function(){
 		territoire.style.fill=color.shift()}
 	}		
 })
+
+//====================================================================================================//
+
+//================================== FONCTIONS LIEES AU COMBAT =======================================//
 
 //tableau trié ordre croissant des num lancés de dés
 	function Combat_lanceDe (num) {

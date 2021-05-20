@@ -35,11 +35,6 @@
 	fill:brown;
 }
 
-/* ne marche pas */
-.GetStarted:click{
-	display: none;
-}
-
 /* Romain fonction Abandonner */
 .Abandon{
 	display: none;
