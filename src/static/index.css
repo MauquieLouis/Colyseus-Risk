@@ -11,6 +11,11 @@
 	font: bold 15px sans-serif;
 }
 
+/* caract�ritiques du tableau ContinentInfo */
+.map tspan{
+	font: 12px sans-serif;
+}
+
 .Oceanie{
 	fill:violet;
 }
@@ -28,11 +33,6 @@
 }
 .Afrique{
 	fill:brown;
-}
-
-/* ne marche pas */
-.GetStarted:click{
-	display: none;
 }
 
 /* Romain fonction Abandonner */
