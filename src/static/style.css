@@ -10,6 +10,7 @@
 }
 .fontArrh6{
 	font-family:"ArmyRust";
+	/*color:#DAA520;*/
 	font-size:24px;
 }
 
@@ -20,6 +21,7 @@
 .fontGzl
 {
 	font-family:"Gazelle";
+	/*color:#DAA520;*/
 	font-size:48px;
 	color:#AEA5D6;
 }
@@ -28,12 +30,7 @@
 	border-right:5px solid #292733;
 	border-bottom:5px solid #292733;
 	background:#3D3A4B;
-}
-#attackInfo
-{
-	color:#B8AFE3;
-	font-size:18px;
-	font-weight:bold;
+	
 }
 input[type=text]{
 	background:#B8AFE3;
@@ -77,6 +74,7 @@ input[type=submit]:hover{
 {
 	background:#E4DEFF;
 }
+
 .toCenter
 {
 	border:1px solid red;
