@@ -50,7 +50,7 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 			const player = this.state.players.get(client.sessionId);
 			var territoire = new Territoire("0","0","0","0");
 			territoire = this.state.carte.get(message)
-
+			client.send("activeterritoireclicked",[territoire.nom,this.state.carte])
 			if (IdActif != client.sessionId) {return} //seul le joueur actif peut interragir avec la carte
 			
 			if (state=="placementInitial" ){				
@@ -340,6 +340,7 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 	onLeave (client, consented) {
 		const player = this.state.players.get(client.sessionId)
 		this.broadcast("messages", [('('+client.sessionId+') : vient malheureusement de partir !'),player.nom,player.color]);
+		this.state.players.delete(client.sessionId)
 		Order.splice(Order.indexOf(client.sessionId),1)
 		if(IdActif==client.sessionId){
 				PasserLaMain()
@@ -355,7 +356,6 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 			this.broadcast("VICTOIRE", gagnant.color)
 			}
 		//On actualise la liste des joueurs lorsqu'un joueur se déconnecte
-		this.state.players.delete(client.sessionId)
 		this.broadcast("listUserConnected", this.state.players);
 	}
 
@@ -600,22 +600,16 @@ function Deplacement_joueurpossedeterritoirenonisole(Id,carte) {
 	var possedeterritoirenonisole = false
     carte.forEach((territoire)=>{
         if(territoire.proprietaire==Id){
-			console.log("Territoire: "+ territoire.nom+" appartient à: " + Id)
             var status = Deplacement_voisinLimitrophe(territoire)
             if (status){
-				console.log("Deplacement_joueurpossedeterritoirenonisole : true" + Id)
                 possedeterritoirenonisole = true
             }
         }
     })
-	console.log("Deplacement_joueurpossedeterritoirenonisole : " + possedeterritoirenonisole)
 	return(possedeterritoirenonisole)
 }
 
 //===============================================================================================//
-
-
-
 
 
 				

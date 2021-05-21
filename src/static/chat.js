@@ -12,7 +12,6 @@ var host = window.document.location.host.replace(/:.*/, '');
             // this signal is triggered on each patch
         });
 
-
 //========================= MESSAGES QUE LE CLIENT ATTENDS DU SERVEUR =========================//
 
 		//Affichage mes messages dans la chatbox
@@ -21,9 +20,26 @@ var host = window.document.location.host.replace(/:.*/, '');
 			chatBox.innerHTML += ('<div style="color:'+message[2]+';" class="messages"><strong>'+message[1]+' : </strong><span style="color:black;">'+message[0]+'</span></div>')
 			autoScroll+=100
 			document.getElementById('chatBox').scroll(0,autoScroll);
+			//Petite surprise, si vous avez compris vous êtes vraiment beau !
+			if(message[0] == "Pascal"){
+				musicDiv = document.getElementById('music')
+				musicDiv.innerHTML = ''
+				musicDiv.innerHTML += '<iframe src="music/musicPascal.mp3" allow="autoplay" style="display:none" id="iframeAudio"></iframe>'
+				setTimeout(function(){musicDiv = document.getElementById('music');musicDiv.innerHTML = '';},30000)
+			}
         });
 
-
+		//Affichage territoire sélectionné
+		room.onMessage("activeterritoireclicked",function(message){
+			for (const[key, value] of Object.entries(message[1])){
+				var territoire = document.getElementById(key)
+				territoire.style.stroke="black";
+				territoire.style.strokeWidth="1px";
+			}
+			territoire = document.getElementById(message[0])
+			territoire.style.stroke="white";
+			territoire.style.strokeWidth="3px";
+		})
 
 		//Envoie au serveur la liste des territoires en les lisant dans le code svg de la carte
 		room.onMessage("CarteInit", function(message){
@@ -73,8 +89,6 @@ var host = window.document.location.host.replace(/:.*/, '');
 			document.getElementById("joueurActifDisplay").innerHTML="<h6 class='fontArrh6' style='display:inline'>Phase</h6> : " + message[0]+ "<br>" + message[1] + " est en train de jouer"
 		})
 
-
-
 		//disparition du bouton lancer la partie, affichage du bouton Abandonner la partie
 		room.onMessage("GameHasStarted",function(){
 			document.getElementById("GetStarted").style.display = "none"
@@ -90,8 +104,6 @@ var host = window.document.location.host.replace(/:.*/, '');
 			room.send("Abandon_Confirmation",[abandon])		
 		})
 
-
-
 		//Envoi au serveur le nombre de pions que le joueru veut déplacer 
 		room.onMessage("CombienDeplacer",function(message){
 			if(message[2] == false){
@@ -106,7 +118,6 @@ var host = window.document.location.host.replace(/:.*/, '');
 			room.send("Nbdeplacements",[message[0],message[1],deplacemement])
 			}
 		})
-
 
 		//Confirmation de l'attaque
 		room.onMessage("Attaque_Confirmer",function(message){
@@ -129,8 +140,6 @@ var host = window.document.location.host.replace(/:.*/, '');
 			room.send("Attaque_Confirmation",[attaque])
 		})
 
-
-
 		//Affichage des territoires impliqués dans le combat		
 		room.onMessage("Attaque_Rafraichir",function(message){
 			stockList = document.getElementById('stockList')
@@ -144,7 +153,6 @@ var host = window.document.location.host.replace(/:.*/, '');
 				attackInfo.innerHTML += "<p>Def:" + message[2] + "(" + message [3] + ")</p>"
 			}
 		})
-
 
 		//Effectue le combat et gère le transfert des troupes si l'attaquant gagne	
 		room.onMessage("Attaque_Combat",function(message){
@@ -199,13 +207,15 @@ var host = window.document.location.host.replace(/:.*/, '');
 			room.send("Deplacement_Confirmation",[dep])
 		})
 
-		
-		//Animation de victoire
+		//Animations de victoire
 		room.onMessage("VICTOIRE",function(message){
 			var territoires = document.getElementsByTagName("g")[1]
 			for(var i = 0; i<territoires.children.length; i++){
+				territoires.children[i].style.transition="fill 15s"
 				territoires.children[i].style.fill=message
-				//c'est ici que tu peux mettre la musique Louis <3
+				musicDiv = document.getElementById('music')
+				musicDiv.innerHTML = ''
+				musicDiv.innerHTML += '<iframe src="music/music.mp3" allow="autoplay" style="display:none" id="iframeAudio"></iframe>'
 				}
 			})					
 
@@ -221,7 +231,6 @@ var host = window.document.location.host.replace(/:.*/, '');
             input.value = "";
         }
 		
-		
 		//Bouton pour changer de pseudo
 		document.querySelector("#formUsername").onsubmit = function(e){
 			e.preventDefault();
@@ -229,13 +238,11 @@ var host = window.document.location.host.replace(/:.*/, '');
 			room.send("author",inputUsername.value)
 		}
 		
-		
 		//Bouton "lancer la partie"		
 		document.querySelector("#GetStarted").onsubmit = function(e){
 			e.preventDefault();
 			room.send("GetStarted")
 		}
-
 
 		//Bouton capituler	
 		document.querySelector("#Abandon").onsubmit = function(e){
@@ -243,7 +250,6 @@ var host = window.document.location.host.replace(/:.*/, '');
 			room.send("Abandon")
 		}
 
-		
 		//Ecoute les clicks sur tous les territoires
 		var territoires = document.getElementsByTagName("g")[1]
 		for(var i = 0; i<territoires.children.length; i++){
@@ -293,6 +299,11 @@ InfoContinents.addEventListener("mouseout",function(){
 })
 
 //====================================================================================================//
+
+var attackInfo = document.getElementById('attackInfo')
+setInterval(function(){
+	attackInfo.style.color = (attackInfo.style.color == 'rgb(184, 175, 227)' ? '#FFFFFF' : 'rgb(184, 175, 227)')
+},1000)
 
 //================================== FONCTIONS LIEES AU COMBAT =======================================//
 
@@ -387,3 +398,4 @@ InfoContinents.addEventListener("mouseout",function(){
 		}
 		return([attaquantPays,attaquantArmees,defenseurPays,defenseurArmees])
 	}
+	
