@@ -7,10 +7,10 @@ This project has been created using [⚔️ `create-colyseus-app`](https://githu
 ## :crossed_swords: Usage
 
 ```
-npm install express
-```
-```
 npm install
+```
+```
+npm install express
 ```
 ```
 npm start
