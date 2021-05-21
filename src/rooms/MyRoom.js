@@ -396,7 +396,7 @@ function tousLesJoueursOntPlace(players){
 
 //Gestion du stock de départ
 function originalStock(nbPlayers){
-	return 33-5*nbPlayers
+	return 50-5*nbPlayers
 }
 
 
