@@ -207,7 +207,42 @@ var host = window.document.location.host.replace(/:.*/, '');
 				territoires.children[i].style.fill=message
 				//c'est ici que tu peux mettre la musique Louis <3
 				}
-			})					
+			})
+
+
+		//Il est bizarre ce truc			
+		room.onMessage("deleteAmerica",function(){
+			var NA = document.getElementsByClassName("NA")
+			for(var i = 0; i<NA.length; i++){
+				NA[i].style.display="none"
+				if(i!=0){document.getElementById(NA[i].id+"Army").style.display="none"}
+			}
+			var SA = document.getElementsByClassName("SA")
+			for(var i = 0; i<SA.length; i++){
+				SA[i].style.display="none"
+				if(i!=0){document.getElementById(SA[i].id+"Army").style.display="none"}
+			}
+			for(var i =0; i<13; i++){
+				var a = 64+2*i
+				document.getElementById("path46"+a).style.display="none"				
+			}
+		})
+		room.onMessage("discoverAmerica",function(){
+			var NA = document.getElementsByClassName("NA")
+			for(var i = 0; i<NA.length; i++){
+				NA[i].style.display=""
+				if(i!=0){document.getElementById(NA[i].id+"Army").style.display=""}
+			}
+			var SA = document.getElementsByClassName("SA")
+			for(var i = 0; i<SA.length; i++){
+				SA[i].style.display=""
+				if(i!=0){document.getElementById(SA[i].id+"Army").style.display=""}
+			}
+			for(var i =0; i<13; i++){
+				var a = 64+2*i
+				document.getElementById("path46"+a).style.display=""				
+			}
+		})					
 
 //=============================================================================================//
 
