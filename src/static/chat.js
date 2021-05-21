@@ -424,6 +424,7 @@ InfoContinents.addEventListener("mouseout",function(){
 	}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	
 =======
 
@@ -431,3 +432,7 @@ InfoContinents.addEventListener("mouseout",function(){
 >>>>>>> 2d3da85815154f8c821fc8353d713f44f4e61a65
 =======
 >>>>>>> parent of 41df996 (tentative numero une)
+=======
+
+//====================================================================================================//
+>>>>>>> 4d4243a6db8d93f7ad5b8cad5d56c77438e5da53
