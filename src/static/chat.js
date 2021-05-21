@@ -302,26 +302,32 @@ InfoContinents.addEventListener("mouseover",function(){
 	var NA = document.getElementsByClassName("NA")
 	for (let territoire of NA) {
 	color.push(territoire.style.fill)
+	territoire.style.transition="fill 2s"
 	territoire.style.fill="yellow"}
 	var SA = document.getElementsByClassName("SA")
 	for (let territoire of SA) {
 	color.push(territoire.style.fill)
+	territoire.style.transition="fill 2s"
 	territoire.style.fill="red"}
 	var EU = document.getElementsByClassName("EU")
 	for (let territoire of EU) {
 	color.push(territoire.style.fill)
+	territoire.style.transition="fill 2s"
 	territoire.style.fill="blue"}	
 	var Afrique = document.getElementsByClassName("Afrique")
 	for (let territoire of Afrique) {
 	color.push(territoire.style.fill)
+	territoire.style.transition="fill 2s"
 	territoire.style.fill="brown"}
 	var Asie = document.getElementsByClassName("Asie")
 	for (let territoire of Asie) {
 	color.push(territoire.style.fill)
+	territoire.style.transition="fill 2s"
 	territoire.style.fill="green"}
 	var Oceanie = document.getElementsByClassName("Oceanie")
 	for (let territoire of Oceanie) {
 	color.push(territoire.style.fill)
+	territoire.style.transition="fill 2s"
 	territoire.style.fill="violet"}	
 })
 InfoContinents.addEventListener("mouseout",function(){
