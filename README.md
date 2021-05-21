@@ -7,8 +7,16 @@ This project has been created using [⚔️ `create-colyseus-app`](https://githu
 ## :crossed_swords: Usage
 
 ```
+npm install express
+```
+```
+npm install
+```
+```
 npm start
 ```
+
+Ouvir un navigateur, puis entrer l'adresse localhost:2567
 
 ## Structure
 
