@@ -387,3 +387,5 @@ InfoContinents.addEventListener("mouseout",function(){
 		}
 		return([attaquantPays,attaquantArmees,defenseurPays,defenseurArmees])
 	}
+
+//====================================================================================================//
