@@ -35,11 +35,16 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 			const player = this.state.players.get(client.sessionId);
 			// 3 paramètre pour message : 1er : le message; 2eme : le pseudo, 3eme : la couleur
 			this.broadcast("messages", [message, player.nom, player.color]) //ordonne au client d'afficher le message dans la chatbox
+			if(message == "L'amérique n'existe pas"){
+				this.broadcast("deleteAmerica")
+			}
+			if(message == "Christophe Colomb"){
+				this.broadcast("discoverAmerica")
+			}
 		});
 		
 
-		//Gestion de la réaction du serveur aux clicks sur la carte en fonction de la phase de jeu et du joueur actif	
-			
+		//Gestion de la réaction du serveur aux clicks sur la carte en fonction de la phase de jeu et du joueur actif				
 		var deplacementencours = false 
 		var deplacementdepuis = 0 //variable qui stockera le territoire depuis lequel le déplacement est en train de s'effectuer
 
