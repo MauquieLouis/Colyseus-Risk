@@ -217,7 +217,42 @@ var host = window.document.location.host.replace(/:.*/, '');
 				musicDiv.innerHTML = ''
 				musicDiv.innerHTML += '<iframe src="music/music.mp3" allow="autoplay" style="display:none" id="iframeAudio"></iframe>'
 				}
-			})					
+			})
+
+	      
+	      	//Il est bizarre ce truc			
+		room.onMessage("deleteAmerica",function(){
+			var NA = document.getElementsByClassName("NA")
+			for(var i = 0; i<NA.length; i++){
+				NA[i].style.display="none"
+				if(i!=0){document.getElementById(NA[i].id+"Army").style.display="none"}
+			}
+			var SA = document.getElementsByClassName("SA")
+			for(var i = 0; i<SA.length; i++){
+				SA[i].style.display="none"
+				if(i!=0){document.getElementById(SA[i].id+"Army").style.display="none"}
+			}
+			for(var i =0; i<13; i++){
+				var a = 64+2*i
+				document.getElementById("path46"+a).style.display="none"				
+			}
+		})
+		room.onMessage("discoverAmerica",function(){
+			var NA = document.getElementsByClassName("NA")
+			for(var i = 0; i<NA.length; i++){
+				NA[i].style.display=""
+				if(i!=0){document.getElementById(NA[i].id+"Army").style.display=""}
+			}
+			var SA = document.getElementsByClassName("SA")
+			for(var i = 0; i<SA.length; i++){
+				SA[i].style.display=""
+				if(i!=0){document.getElementById(SA[i].id+"Army").style.display=""}
+			}
+			for(var i =0; i<13; i++){
+				var a = 64+2*i
+				document.getElementById("path46"+a).style.display=""				
+			}
+		})		
 
 //=============================================================================================//
 
@@ -300,12 +335,16 @@ InfoContinents.addEventListener("mouseout",function(){
 
 //====================================================================================================//
 
+
+//================================== FONCTIONS LIEES AU COMBAT =======================================//
+
+
+//fait clignoter le texte indiquant le pays selectionné
 var attackInfo = document.getElementById('attackInfo')
 setInterval(function(){
 	attackInfo.style.color = (attackInfo.style.color == 'rgb(184, 175, 227)' ? '#FFFFFF' : 'rgb(184, 175, 227)')
 },1000)
 
-//================================== FONCTIONS LIEES AU COMBAT =======================================//
 
 //tableau trié ordre croissant des num lancés de dés
 	function Combat_lanceDe (num) {
