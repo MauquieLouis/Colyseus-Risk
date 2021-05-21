@@ -58,16 +58,16 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 					territoire.army++ 
 					player.stock--
 					PasserLaMain() //passe au joueur suivant
-//					if(!tousLesJoueursOntPlace(this.state.players) && this.state.players.get(IdActif).stock==0){PasserLaMain()}
 				}
 				if (tousLesJoueursOntPlace(this.state.players)){ //si tout le monde a placé ses pions de départ, passage à la phase renfort
 					state="renforts"
 					this.state.players.get(IdActif).stock=calculRenforts(IdActif,this.state.carte) //attribue au joueur actif ses renforts à placer
 				}
-				else if (player.stock == 0){PasserLaMain()} //cas où le joueur n'as plus rien à placer mais d'auters joueurs si
+				else if (this.state.players.get(IdActif).stock == 0){ //cas où le joueur n'as plus rien à placer mais d'auters joueurs si
+					while(this.state.players.get(IdActif).stock==0){PasserLaMain()}
+					} 
 				this.broadcast("activePlayer",[state, this.state.players.get(IdActif).nom, this.state.players.get(IdActif).color]) //ordonne au client d'afficher qui est le joueur actif
 				this.broadcast("carteChange", [this.state.players,this.state.carte])	//met à jour la carte	
-//				if(!tousLesJoueursOntPlace(this.state.players) && player.stock==0){PasserLaMain()}						
 			}
 			
 			
@@ -393,16 +393,10 @@ function tousLesJoueursOntPlace(players){
 	return true
 }
 
-//Gestion du cas où le nombre de joueurs n'est pas un diviseur du nombre de territoires
-function placementInitCasAsymétrique(Id,carte){
-	var n = 0
-	
-}
-
 
 //Gestion du stock de départ
 function originalStock(nbPlayers){
-	return 50-5*nbPlayers
+	return 33-5*nbPlayers
 }
 
 
