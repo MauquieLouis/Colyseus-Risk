@@ -35,11 +35,16 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 			const player = this.state.players.get(client.sessionId);
 			// 3 paramètre pour message : 1er : le message; 2eme : le pseudo, 3eme : la couleur
 			this.broadcast("messages", [message, player.nom, player.color]) //ordonne au client d'afficher le message dans la chatbox
+			if(message == "L'amérique n'existe pas"){
+				this.broadcast("deleteAmerica")
+			}
+			if(message == "Christophe Colomb"){
+				this.broadcast("discoverAmerica")
+			}
 		});
 		
 
-		//Gestion de la réaction du serveur aux clicks sur la carte en fonction de la phase de jeu et du joueur actif	
-			
+		//Gestion de la réaction du serveur aux clicks sur la carte en fonction de la phase de jeu et du joueur actif				
 		var deplacementencours = false 
 		var deplacementdepuis = 0 //variable qui stockera le territoire depuis lequel le déplacement est en train de s'effectuer
 
@@ -50,7 +55,7 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 			const player = this.state.players.get(client.sessionId);
 			var territoire = new Territoire("0","0","0","0");
 			territoire = this.state.carte.get(message)
-			client.send("activeterritoireclicked",[territoire.nom,this.state.carte])
+
 			if (IdActif != client.sessionId) {return} //seul le joueur actif peut interragir avec la carte
 			
 			if (state=="placementInitial" ){				
@@ -58,16 +63,16 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 					territoire.army++ 
 					player.stock--
 					PasserLaMain() //passe au joueur suivant
-//					if(!tousLesJoueursOntPlace(this.state.players) && this.state.players.get(IdActif).stock==0){PasserLaMain()}
 				}
 				if (tousLesJoueursOntPlace(this.state.players)){ //si tout le monde a placé ses pions de départ, passage à la phase renfort
 					state="renforts"
 					this.state.players.get(IdActif).stock=calculRenforts(IdActif,this.state.carte) //attribue au joueur actif ses renforts à placer
 				}
-				else if (player.stock == 0){PasserLaMain()} //cas où le joueur n'as plus rien à placer mais d'auters joueurs si
+				else if (this.state.players.get(IdActif).stock == 0){ //cas où le joueur n'as plus rien à placer mais d'auters joueurs si
+					while(this.state.players.get(IdActif).stock==0){PasserLaMain()}
+					} 
 				this.broadcast("activePlayer",[state, this.state.players.get(IdActif).nom, this.state.players.get(IdActif).color]) //ordonne au client d'afficher qui est le joueur actif
 				this.broadcast("carteChange", [this.state.players,this.state.carte])	//met à jour la carte	
-//				if(!tousLesJoueursOntPlace(this.state.players) && player.stock==0){PasserLaMain()}						
 			}
 			
 			
@@ -340,7 +345,6 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 	onLeave (client, consented) {
 		const player = this.state.players.get(client.sessionId)
 		this.broadcast("messages", [('('+client.sessionId+') : vient malheureusement de partir !'),player.nom,player.color]);
-		this.state.players.delete(client.sessionId)
 		Order.splice(Order.indexOf(client.sessionId),1)
 		if(IdActif==client.sessionId){
 				PasserLaMain()
@@ -356,6 +360,7 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 			this.broadcast("VICTOIRE", gagnant.color)
 			}
 		//On actualise la liste des joueurs lorsqu'un joueur se déconnecte
+		this.state.players.delete(client.sessionId)
 		this.broadcast("listUserConnected", this.state.players);
 	}
 
@@ -364,7 +369,11 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 
 }
 
-//=======================================================================================//	
+//=======================================================================================//
+
+
+
+//================================ AUTRES FONCTIONS =====================================//
 
 
 
@@ -391,12 +400,6 @@ function tousLesJoueursOntPlace(players){
 		if(players.get(Order[i]).stock!=0){return false}
 	}
 	return true
-}
-
-//Gestion du cas où le nombre de joueurs n'est pas un diviseur du nombre de territoires
-function placementInitCasAsymétrique(Id,carte){
-	var n = 0
-	
 }
 
 
@@ -490,6 +493,10 @@ function getVoisins(name){
 		if(total>3){return total}
 		else{return 3}
 	}
+
+
+//===============================================================================================//
+
 
 
 //========================= FONCTIONS LIEES AU DEPLACEMENT ET AU COMBAT =========================//
@@ -600,16 +607,22 @@ function Deplacement_joueurpossedeterritoirenonisole(Id,carte) {
 	var possedeterritoirenonisole = false
     carte.forEach((territoire)=>{
         if(territoire.proprietaire==Id){
+			console.log("Territoire: "+ territoire.nom+" appartient à: " + Id)
             var status = Deplacement_voisinLimitrophe(territoire)
             if (status){
+				console.log("Deplacement_joueurpossedeterritoirenonisole : true" + Id)
                 possedeterritoirenonisole = true
             }
         }
     })
+	console.log("Deplacement_joueurpossedeterritoirenonisole : " + possedeterritoirenonisole)
 	return(possedeterritoirenonisole)
 }
 
 //===============================================================================================//
+
+
+
 
 
 				
