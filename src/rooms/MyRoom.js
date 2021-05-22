@@ -357,7 +357,7 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 				this.broadcast("carteChange", [this.state.players,this.state.carte])
 			}
 		if(Order.length==1){ //ceci ne s'active que si il n'y a plus qu'un joueur
-			var gagnant = this.state.players.get(Idactif)
+			var gagnant = this.state.players.get(IdActif)
 			this.broadcast("messages", [('('+IdActif+') : vient de conquérir le monde, quel boss !'),gagnant.nom,gagnant.color]);
 			this.broadcast("VICTOIRE", gagnant.color)
 			}
