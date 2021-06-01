@@ -4,6 +4,7 @@
 .map path{
 	stroke: black;
 	stroke-width: 1px;
+	transition: fill 2s;
 }
 /* c'est les caract�ristiques des chiffres */
 .map text{

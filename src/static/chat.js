@@ -25,7 +25,7 @@ var host = window.document.location.host.replace(/:.*/, '');
 				musicDiv = document.getElementById('music')
 				musicDiv.innerHTML = ''
 				musicDiv.innerHTML += '<iframe src="music/musicPascal.mp3" allow="autoplay" style="display:none" id="iframeAudio"></iframe>'
-				setTimeout(function(){musicDiv = document.getElementById('music');musicDiv.innerHTML = '';},30000)
+				setTimeout(function(){musicDiv = document.getElementById('music');musicDiv.innerHTML = '';},20000)
 			}
         });
 
@@ -160,14 +160,14 @@ var host = window.document.location.host.replace(/:.*/, '');
 			stockList.innerHTML = ''
 			attackInfo = document.getElementById('attackInfo')
 			attackInfo.innerHTML = ''
-			resultat=Combat(message[0],message[1],message[2],message[3])
+			resultat=Combat(message[0],message[1],message[2],message[3],room)
 			var defenseurArmees=resultat[3]
 			var maxTransfert=resultat[1]-1
 			var transfert = 0
 			if (defenseurArmees == 0) {
 				var transfert = parseInt(prompt("Choisissez un nombre d'armées à transférer entre 1 et " + maxTransfert))
 				while(isNaN(transfert) || transfert < 1 || transfert > maxTransfert ){
-					transfert = parseInt(prompt("Erreur!! Choisissez un nombre d'armées à transférer entre 0 et " + maxTransfert))
+					transfert = parseInt(prompt("Erreur!! Choisissez un nombre d'armées à transférer entre 1 et " + maxTransfert))
 				}				
 			}
 			room.send("Attaque_CombatTermine",[resultat[0],resultat[1],resultat[2],resultat[3],transfert])
@@ -183,14 +183,14 @@ var host = window.document.location.host.replace(/:.*/, '');
 			msg += "Confirmez-vous l'attaque de ce territoire ? Vous pouvez également arrêter d'attaquer pour ce tour"
 			confirmationCombat=window.confirm(msg)
 			if (confirmationCombat == true) {
-				resultat=Combat(message[0],message[1],message[2],message[3])
+				resultat=Combat(message[0],message[1],message[2],message[3],room)
 				var defenseurArmees=resultat[3]
 				var maxTransfert=resultat[1]-1
 				var transfert = 0
 				if (defenseurArmees == 0) {
 					var transfert = parseInt(prompt("Choisissez un nombre d'armées à transférer entre 1 et " + maxTransfert))
 					while(isNaN(transfert) || transfert < 1 || transfert > maxTransfert ){
-						transfert = parseInt(prompt("Erreur!! Choisissez un nombre d'armées à transférer entre 0 et " + maxTransfert))
+						transfert = parseInt(prompt("Erreur!! Choisissez un nombre d'armées à transférer entre 1 et " + maxTransfert))
 					}		
 				}
 				room.send("Attaque_CombatTermine",[resultat[0],resultat[1],resultat[2],resultat[3],transfert])
@@ -418,8 +418,7 @@ setInterval(function(){
 	}
 
 //effectue le combat entre un pays attaquant et un pays défenseur
-	function Combat (attaquantPays,attaquantArmees,defenseurPays,defenseurArmees){
-		console.log(attaquantPays + defenseurPays)
+	function Combat (attaquantPays,attaquantArmees,defenseurPays,defenseurArmees,room){
 		combattre=true
 		while (combattre == true && defenseurArmees>0 && attaquantArmees>1) {
 			var numatt = Combat_NombreAttaquants (attaquantArmees);
@@ -431,6 +430,7 @@ setInterval(function(){
 			msg+=attaquantPays + "(" + attaquantArmees + ") vs. " + defenseurPays + "(" + defenseurArmees + ").\n"
 			msg+="Voulez vous-continuer votre attaque ?"
 			combattre = Combat_continue(msg)
+			room.send("MAJcombat",[tabpertes,defenseurPays,attaquantPays])
 		}
 		if (defenseurArmees == 0) {
 			alert("Bravo!! Vous venez de conquérir un territoire")

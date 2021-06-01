@@ -220,6 +220,8 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 			else {
 				var attaquantPays=this.state.carte.get(attaquantPaysNom)
 				attaquantPays.army=attaquantArmees
+				var defenseurPays=this.state.carte.get(defenseurPaysNom)
+				defenseurPays.army=defenseurArmees
 				state="deplacement"
 				attaqueencours=false
 			}
@@ -292,13 +294,25 @@ exports.MyRoom = class MyRoom extends colyseus.Room {
 				OrderInitialize()
 				this.broadcast("activePlayer",[state, this.state.players.get(IdActif).nom, this.state.players.get(IdActif).color])
 			}
+			if(Order.length==1){ //ceci ne s'active que si il n'y a plus qu'un joueur
+				var gagnant = this.state.players.get(IdActif)
+				this.broadcast("messages", [('('+IdActif+') : vient de conquérir le monde, quel boss !'),gagnant.nom,gagnant.color]);
+				this.broadcast("VICTOIRE", gagnant.color)
+			}
+		})
+		
+		//MAJ Combat
+		this.onMessage("MAJcombat",(client,message)=>{
+			this.state.carte.get(message[1]).army-=message[0][1]
+			this.state.carte.get(message[2]).army-=message[0][0]
+			this.broadcast("carteChange", [this.state.players,this.state.carte])
 		})
 
 
 
 		//Gestion de la capitulation d'un joueur
 		this.onMessage("Abandon",(client)=>{
-			client.send("Abandon_Confirmer",[""])
+			if(client.sessionId == IdActif){client.send("Abandon_Confirmer",[""])}
 		})
 		this.onMessage("Abandon_Confirmation",(client, message)=>{
 			if (message == "1") {
